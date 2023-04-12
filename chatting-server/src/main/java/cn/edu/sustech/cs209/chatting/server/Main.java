@@ -1,8 +1,10 @@
 package cn.edu.sustech.cs209.chatting.server;
 
-public class Main {
+import java.io.IOException;
 
-    public static void main(String[] args) {
-        System.out.println("Starting server");
+public class Main {
+    public static void main(String[] args) throws IOException, ClassNotFoundException {
+        Server server = new Server();
+        server.SeverRun();
     }
 }
