@@ -1,14 +1,13 @@
 package cn.edu.sustech.cs209.chatting.server;
 
-import cn.edu.sustech.cs209.chatting.common.ChatBox;
-import cn.edu.sustech.cs209.chatting.common.Message;
-import cn.edu.sustech.cs209.chatting.common.User;
+import cn.edu.sustech.cs209.chatting.common.*;
 
 import java.io.*;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import static cn.edu.sustech.cs209.chatting.server.Server.*;
 
@@ -23,9 +22,10 @@ public class SocketThread implements Runnable{
         BufferedReader bufferedReader = null;
         PrintWriter writer = null;
         try {
-            ObjectInputStream objectInputStream = new ObjectInputStream(socket.getInputStream());
+            MyObjectInputStream objectInputStream = new MyObjectInputStream(socket.getInputStream());
             while (!socket.isClosed() || socket.isConnected()) {
                 Message message = (Message) objectInputStream.readObject();
+                System.out.println("received: " + message.getData());
                 int id = Integer.parseInt(message.getSendTo());
                 if (id != 0) {
                     ChatBox current = idCBMap.get(id);
@@ -33,6 +33,7 @@ public class SocketThread implements Runnable{
                     curHistory.add(message);
                     current.setHistory(curHistory);
                     idCBMap.replace(current.getId(), current);
+//                    sendMessage(socket, message);
                     for (User user : current.getUsers()) {
                         Socket socket1 = userSocMap.get(user.getName());
                         sendMessage(socket1, message);
@@ -88,6 +89,9 @@ public class SocketThread implements Runnable{
                         }
                         // LOGIN name password
                         case "LOGIN" : {
+                            if (dataP.length != 3){
+                                sendMessage(socket, "User Name or password can not contain BLANKSPACE");
+                            }
                             User targetUser = nameUserMap.get(dataP[1]);
                             // 用户不存在则注册
                             if (targetUser == null) {
@@ -100,16 +104,22 @@ public class SocketThread implements Runnable{
                                     userSocMap.put(dataP[1], socket);
                                     sendMessage(socket, targetUser);
                                 } else {
-                                    sendMessage(socket, "Password wrong");
+                                    sendMessage(socket, "Password wrong!");
                                     socket.close();
                                 }
                             }
                             break;
                         }
-                        case "EXIT username" : {
+                        //EXIT username
+                        case "EXIT" : {
                             userSocMap.remove(dataP[1]);
                             sendMessage(socket, "CLOSE");
                             socket.close();
+                            break;
+                        }
+                        case "GETAU" : {
+                            List<User> users = (List<User>) nameUserMap.values();
+                            sendMessage(socket, users);
                             break;
                         }
                         default: {
@@ -120,13 +130,14 @@ public class SocketThread implements Runnable{
                 }
 
             }
+            System.out.println("socked is closed");
 
         } catch (IOException | ClassNotFoundException e) {
             e.printStackTrace();
         }
     }
     public static void sendMessage(Socket socketToSend, Object o) throws IOException {
-        ObjectOutputStream objectOutputStream = new ObjectOutputStream(socketToSend.getOutputStream());
+        MyObjectOutputStream objectOutputStream = new MyObjectOutputStream(socketToSend.getOutputStream());
         objectOutputStream.writeObject(o);
         objectOutputStream.flush();
     }

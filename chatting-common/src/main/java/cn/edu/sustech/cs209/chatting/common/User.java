@@ -15,6 +15,9 @@ public class User  implements Serializable {
 
     public User() {}
 
+    public void addChatBox(ChatBox chatBox) {
+        chatBoxList.add(chatBox);
+    }
     public String getName() {
         return name;
     }

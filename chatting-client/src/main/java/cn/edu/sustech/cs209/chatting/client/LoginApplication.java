@@ -4,13 +4,16 @@ import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+import javafx.stage.StageStyle;
+
 import java.io.IOException;
 
 public class LoginApplication extends Application {
     @Override
     public void start(Stage stage) throws IOException {
         FXMLLoader fxmlLoader = new FXMLLoader(LoginApplication.class.getResource("designLogin.fxml"));
-        Scene scene = new Scene(fxmlLoader.load(), 398.0 , 215.0);
+        Scene scene = new Scene(fxmlLoader.load(), 543.0 , 215.0);
+        stage.setResizable(false);
         stage.setTitle("Login");
         stage.setScene(scene);
         stage.show();

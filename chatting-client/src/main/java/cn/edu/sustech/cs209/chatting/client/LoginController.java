@@ -13,6 +13,8 @@ import java.util.Date;
 import java.util.ResourceBundle;
 
 import cn.edu.sustech.cs209.chatting.common.Message;
+import cn.edu.sustech.cs209.chatting.common.MyObjectInputStream;
+import cn.edu.sustech.cs209.chatting.common.MyObjectOutputStream;
 import cn.edu.sustech.cs209.chatting.common.User;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -45,9 +47,9 @@ public class LoginController {
 
     public Socket socket;
 
-    private ObjectOutputStream objectOutputStream;
+    private MyObjectOutputStream objectOutputStream;
 
-    private ObjectInputStream objectInputStream;
+    private MyObjectInputStream objectInputStream;
 
     public User user;
     @FXML // This method is called by the FXMLLoader when initialization is complete
@@ -57,7 +59,7 @@ public class LoginController {
         assert usernameInput != null : "fx:id=\"usernameInput\" was not injected: check your FXML file 'Untitled'.";
         assert wrongPasswordText != null : "fx:id=\"wrongPasswordText\" was not injected: check your FXML file 'Untitled'.";
         socket = new Socket("localhost", 8080);
-        objectOutputStream = new ObjectOutputStream(socket.getOutputStream());
+        objectOutputStream = new MyObjectOutputStream(socket.getOutputStream());
     }
 
     public void login() throws Exception {
@@ -67,12 +69,21 @@ public class LoginController {
         String username = usernameInput.getText();
         String password = passwordInput.getText();
         Message message = new Message(new Date().getTime(), username, "0", "LOGIN " + username + " " + password);
-        objectOutputStream.writeObject(message);
+        if (socket.isConnected()) {
+            objectOutputStream.writeObject(message);
+        } else {
+            socket = new Socket("localhost", 8080);
+            objectOutputStream = new MyObjectOutputStream(socket.getOutputStream());
+            objectInputStream = new MyObjectInputStream(socket.getInputStream());
+            objectOutputStream.writeObject(message);
+        }
+
         objectOutputStream.flush();
-        objectInputStream = new ObjectInputStream(socket.getInputStream());
+        objectInputStream = new MyObjectInputStream(socket.getInputStream());
         Object o = objectInputStream.readObject();
         if (! (o instanceof User)) {
-            wrongPasswordText.setText("Wrong Password!");
+            String messageReceive = (String) o;
+            wrongPasswordText.setText(messageReceive);
             usernameInput.clear();
             passwordInput.clear();
         } else {
@@ -90,7 +101,7 @@ public class LoginController {
 
             controller.hideLogin();
 
-            controller.test();
+            controller.init();
             Stage newStage = new Stage();
             newStage.setTitle("ChatRoom");
             newStage.setScene(scene);

@@ -87,7 +87,7 @@
                <content>
                   <VBox fx:id="chatBoxList" prefHeight="576.0" prefWidth="138.0">
                      <children>
-                        <ListView fx:id="chatBoxListView" fixedCellSize="70.0" prefHeight="577.0" prefWidth="138.0" />
+                        <ListView fx:id="chatBoxListView" fixedCellSize="70.0" prefHeight="577.0" prefWidth="138.0" onMouseClicked="#changeChatBox" />
                      </children></VBox>
                </content>
             </ScrollPane>
