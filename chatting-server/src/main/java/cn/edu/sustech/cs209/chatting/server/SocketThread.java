@@ -28,6 +28,7 @@ public class SocketThread implements Runnable{
                 System.out.println("received: " + message.getData());
                 int id = Integer.parseInt(message.getSendTo());
                 if (id != 0) {
+                    System.out.println("received a chat message" + message.getData());
                     ChatBox current = idCBMap.get(id);
                     List<Message> curHistory = current.getHistory();
                     curHistory.add(message);
@@ -35,6 +36,7 @@ public class SocketThread implements Runnable{
                     idCBMap.replace(current.getId(), current);
 //                    sendMessage(socket, message);
                     for (User user : current.getUsers()) {
+                        System.out.println(user);
                         Socket socket1 = userSocMap.get(user.getName());
                         sendMessage(socket1, message);
                     }
@@ -85,6 +87,7 @@ public class SocketThread implements Runnable{
                                     sendMessage(socket1, chatBox);
                                 }
                             }
+                            System.out.println("Sever Create Chat successfully");
                             break;
                         }
                         // LOGIN name password
@@ -118,7 +121,8 @@ public class SocketThread implements Runnable{
                             break;
                         }
                         case "GETAU" : {
-                            List<User> users = (List<User>) nameUserMap.values();
+                            System.out.println("Received GETAU");
+                            List<User> users = new ArrayList<>(nameUserMap.values());
                             sendMessage(socket, users);
                             break;
                         }

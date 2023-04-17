@@ -54,8 +54,8 @@
       <menus>
         <Menu fx:id="menu" mnemonicParsing="false" text="New Chat">
                <items>
-                  <MenuItem fx:id="createPrivateChat" mnemonicParsing="false" text="Private Chat" />
-                  <MenuItem fx:id="createGroupChat" mnemonicParsing="false" text="Group Chat" />
+                  <MenuItem fx:id="createPrivateChat" mnemonicParsing="false" text="Private Chat" onAction="#CreatePrivateChat"/>
+                  <MenuItem fx:id="createGroupChat" mnemonicParsing="false" text="Group Chat" onAction="#createGroupChat"/>
                </items>
         </Menu>
       </menus>
