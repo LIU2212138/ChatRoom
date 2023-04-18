@@ -16,4 +16,6 @@ public interface ChatBoxDao {
 
     void insertChatBox(ChatBox chatBox);
     Integer selectMaxId();
+
+    void deleteChatBox(int id);
 }

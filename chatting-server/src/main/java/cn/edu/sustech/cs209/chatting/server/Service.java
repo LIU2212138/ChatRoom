@@ -146,4 +146,8 @@ public class Service {
     public void insertChatBox(ChatBox chatBox) {
         chatBoxDao.insertChatBox(chatBox);
     }
+
+    public void deleteChatBox(int id) {
+        chatBoxDao.deleteChatBox(id);
+    }
 }

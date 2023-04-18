@@ -21,6 +21,10 @@
         </set>
         WHERE  id = #{id}
     </update>
+    <delete id="deleteChatBox">
+        DELETE FROM cs209.public.chatbox
+        WHERE id = #{id}
+    </delete>
 
 
     <select id="selectChatBoxById" resultType="cn.edu.sustech.cs209.chatting.common.ChatBox">

@@ -73,7 +73,7 @@ public class groupChooseController {
     void changeDefaultName() {
         MultipleSelectionModel<User> selectionModel = grpupChooseListview.getSelectionModel();
         ObservableList<User> user = selectionModel.getSelectedItems();
-        StringBuilder name = new StringBuilder("ChatRoomWith: " + self.getName());
+        StringBuilder name = new StringBuilder("ChatRoomWith:" + self.getName());
         for (User user1 : user) {
             name.append(",");
             name.append(user1.getName());
@@ -114,6 +114,7 @@ public class groupChooseController {
 //        });
 //        getCHatNameThread.start();
         String name = getNameField.getText();
+        System.out.println(name);
         chooseName.add(name);
         chooseUser.addAll(user);
         System.out.println(chooseUser);

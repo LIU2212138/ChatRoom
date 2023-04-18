@@ -4,10 +4,8 @@ import cn.edu.sustech.cs209.chatting.common.*;
 
 import java.io.*;
 import java.net.Socket;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.sql.Time;
+import java.util.*;
 
 import static cn.edu.sustech.cs209.chatting.server.Server.*;
 
@@ -107,7 +105,12 @@ public class SocketThread implements Runnable{
                                 ChatBox chatBox = service.selectChatBoxById(mayBeID);
                                 for (User user : createUser) {
                                     Socket socket1 = userSocMap.get(user.getName());
-                                    sendMessage(socket1, chatBox);
+                                    if (socket1 != null) {
+                                        if (socket1.isConnected()) {
+                                            sendMessage(socket1, chatBox);
+                                        }
+                                    }
+
                                 }
                             }
                             System.out.println("Sever Create Chat successfully");
@@ -155,6 +158,50 @@ public class SocketThread implements Runnable{
                                 users.add(service.selectUserByName(name));
                             }
                             sendMessage(socket, users);
+                            break;
+                        }
+                        //delete Userid ChatBoxId
+                        case "DELETE": {
+                            int userId = Integer.parseInt(dataP[1]);
+                            int chatBoxId = Integer.parseInt(dataP[2]);
+                            User user = service.selectUserById(userId);
+                            List<Integer> chatBoxListForThisUser = user.getIndexOfChatBoxList();
+                            if (chatBoxListForThisUser.contains(chatBoxId)) {
+                                chatBoxListForThisUser.remove(Integer.valueOf(chatBoxId));
+                            }
+                            List<ChatBox> chatBoxList = user.getChatBoxList();
+                            chatBoxList.removeIf(chatBox -> chatBox.getId() == chatBoxId);
+                            service.updateIndexOfChatBoxList(chatBoxListForThisUser, userId);
+
+                            ChatBox chatBox = service.selectChatBoxById(chatBoxId);
+                            chatBox.getUsers().removeIf(user1 -> user1.getId() == userId);
+                            chatBox.getUserIdList().remove(Integer.valueOf(userId));
+                            if (chatBox.getUserIdList().size() == 0) {
+                                service.deleteChatBox(chatBoxId);
+                                Message returnMessage = new Message(new Date().getTime(),
+                                        "0", String.valueOf(chatBoxId),
+                                        user.getName() + " exit the chat room.");
+                                sendMessage(socket, returnMessage);
+                            } else {
+                                service.updateUserIdList(chatBox.getUserIdList(), chatBoxId);
+                                Message returnMessage = new Message(new Date().getTime(),
+                                        "0", String.valueOf(chatBoxId),
+                                        user.getName() + " exit the chat room.");
+                                returnMessage.setId(MSG_IDGENERATOR++);
+                                service.insertMessage(returnMessage);
+                                chatBox.addHistory(returnMessage);
+                                service.updateHistoryIdList(chatBox.getHistoryIdList(), chatBoxId);
+                                for (User userSend : chatBox.getUsers()) {
+                                    System.out.println(userSend);
+                                    Socket socket1 = userSocMap.get(userSend.getName());
+                                    if (socket1 != null) {
+                                        if (socket1.isConnected()) {
+                                            sendMessage(socket1, returnMessage);
+                                        }
+                                    }
+                                }
+                                sendMessage(socket, returnMessage);
+                            }
                             break;
                         }
                         default: {

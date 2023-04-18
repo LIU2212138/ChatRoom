@@ -16,13 +16,13 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
-import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.GridPane;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.VBox;
+import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
+import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
+import javafx.scene.text.TextBoundsType;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.util.Callback;
 import javafx.scene.control.PopupControl;
@@ -35,7 +35,14 @@ import java.net.SocketException;
 import java.net.URL;
 import java.util.*;
 import com.madeorsk.emojisfx.*;
+
+import static com.sun.javafx.scene.control.skin.Utils.computeTextHeight;
+
 public class ChatRoomController implements Initializable  {
+
+
+    @FXML
+    private Button exitChatRoomButton;
 
     @FXML // ResourceBundle that was given to the FXMLLoader
     private ResourceBundle resources;
@@ -78,16 +85,16 @@ public class ChatRoomController implements Initializable  {
 
     @FXML // fx:id="sendMeeage"
     private Button sendMeeage; // Value injected by FXMLLoader
-    @FXML // fx:id="sendMeeage"
-    private Button emoji;
+
     @FXML // fx:id="splitPane"
     private SplitPane splitPane; // Value injected by FXMLLoader
 
-    @FXML // fx:id="textAncho"
-    private AnchorPane textAncho; // Value injected by FXMLLoader
 
     @FXML // fx:id="textArea"
     private TextArea textArea; // Value injected by FXMLLoader
+
+    @FXML
+    private Button getGroupMenber;
 
     private Socket socket;
 
@@ -106,14 +113,11 @@ public class ChatRoomController implements Initializable  {
     private Thread receiveDataThread;
     private boolean hasReceivedNewChatBox;
     private List<User> currentOnlineUser;
-    private int testCount = 0;
 
     public List<User> choosedUser;
 
     public List<String> chatName;
     private Stage selfStage;
-
-    private PopupControl emojiPopup;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -130,57 +134,7 @@ public class ChatRoomController implements Initializable  {
         hasReceivedNewChatBox = false;
         choosedUser = new ArrayList<>();
         chatName = new ArrayList<>();
-        receiveDataThread = new Thread(() -> {
-            try {
-                System.out.println("Thread start");
-                objectInputStream = new MyObjectInputStream(socket.getInputStream());
-                while (!Thread.currentThread().isInterrupted()){
-                    //TODO: 持续接收消息并解析，作出对应的操作(记得回顾server的操作)
-                    Object o = objectInputStream.readObject();
-                    System.out.println("Thread read Object");
-                    Platform.runLater(() -> {
-                        if (o instanceof Message) {
-                            System.out.println("o is a message");
-                            Message message = (Message) o;
-                            String sentTo = message.getSendTo();
-                            String sentBy = message.getSentBy();
-                            long time = message.getTimestamp();
-                            String data = message.getData();
-                            if (sentTo.equals("0")) {
-
-                            } else {
-                                System.out.println("o sent to chat room");
-                                System.out.println("user.getChatBoxList(): " + user.getChatBoxList());
-                                for (ChatBox chatBox : user.getChatBoxList()) {
-                                    System.out.println("chatBox.getId() = " + chatBox.getId());
-                                    System.out.println("sentTo: " + sentTo);
-                                    if (chatBox.getId() == Integer.parseInt(sentTo)) {
-                                        chatBox.addHistory(message);
-                                        if (chatBox.equals(currentChatBox)){
-                                            flashMessages(chatBox);
-                                        }
-                                        System.out.println("add message to chatBox History");
-                                    }
-                                }
-                                flashChatBox();
-                            }
-                        } else if (o instanceof ChatBox) {
-                            System.out.println("Received a chatBox");
-                            ChatBox chatBox = (ChatBox) o;
-                            user.addChatBox(chatBox);
-                            hasReceivedNewChatBox = true;
-                            flashChatBox();
-                            System.out.println("Create ChatBox");
-                        } else if (o instanceof List) {
-                            currentOnlineUser = (List<User>) o;
-                        }
-                    });
-                }
-            } catch (IOException | ClassNotFoundException e) {
-
-            }
-        });
-        receiveDataThread.start();
+        runReceiver();
 
         List<ChatBox> chatBoxes = user.getChatBoxList();
         System.out.println(chatBoxes);
@@ -222,10 +176,8 @@ public class ChatRoomController implements Initializable  {
         } catch (NullPointerException e) {
             e.printStackTrace();
             Platform.exit();
+            System.exit(-1);
         }
-
-
-
     }
 
     public void CreatePrivateChat() throws IOException {
@@ -256,6 +208,9 @@ public class ChatRoomController implements Initializable  {
                     Stage newStage = new Stage();
                     newStage.setScene(scene);
                     newStage.setTitle("Create A private Chat");
+                    newStage.setOnCloseRequest(event -> {
+                        choosedUser.add(null);
+                    });
                     newStage.show();
                 });
 
@@ -269,19 +224,21 @@ public class ChatRoomController implements Initializable  {
                         System.out.println(choosedUser);
                     }
                 }
-                System.out.println("Get the chose user");
+                if (chooseUser != null) {
+                    System.out.println("Get the chose user");
 
-                objectOutputStream.writeObject(new Message(new Date().getTime(), user.getName(),
-                        "0", "CREATE " + user.getName() + "," + chooseUser.getName()
-                        + " " + "TestCreateName"));
+                    objectOutputStream.writeObject(new Message(new Date().getTime(), user.getName(),
+                            "0", "CREATE " + user.getName() + "," + chooseUser.getName()
+                            + " " + chooseUser.getName()));
 
-                System.out.println("Send the create message");
-                while (true) {
-                    if (hasReceivedNewChatBox) {
-                        break;
+                    System.out.println("Send the create message");
+                    while (true) {
+                        if (hasReceivedNewChatBox) {
+                            break;
+                        }
                     }
+                    System.out.println("CREATE SUCCESSFULLY");
                 }
-                System.out.println("CREATE SUCCESSFULLY");
                 hasReceivedNewChatBox = false;
                 currentOnlineUser = null;
                 choosedUser.clear();
@@ -321,41 +278,50 @@ public class ChatRoomController implements Initializable  {
                     Stage newStage = new Stage();
                     newStage.setScene(scene);
                     newStage.setTitle("Create A group Chat");
+                    newStage.setOnCloseRequest(event -> {
+                        choosedUser.add(null);
+                    });
                     newStage.show();
                 });
 
                 List<User> chooseUser ;
                 while (true) {
                     if (choosedUser.size() != 0) {
-                        chooseUser = choosedUser;
-                        System.out.println(choosedUser);
+                        if (choosedUser.get(0) != null) {
+                            chooseUser = choosedUser;
+                            System.out.println(choosedUser);
+                        } else {
+                            chooseUser = null;
+                        }
                         break;
                     } else {
 //                        System.out.println(choosedUser);
                     }
                 }
-                System.out.println("Get the chose user");
+
                 //  发送报文申请创建新的对话，检测返回的对话是否已存在，若存在，则直接使用之前的会话，否则创建新的
                 StringBuilder data = new StringBuilder();
-
-                for (User value : chooseUser) {
-                    data.append(value.getName());
-                    data.append(",");
-                }
-                data.append(user.getName());
-                objectOutputStream.writeObject(new Message(new Date().getTime(), user.getName(),
-                        "0", "CREATE " + data.toString()
-                        + " " + chatName.get(0)));
-                System.out.println(chatName.get(0));
-                //  注意返回的报文在报文接收线程中处理，可以创一个新的static变量，循环检测这个变量是否为空
-
-                System.out.println("Send the create message");
-                while (true) {
-                    if (hasReceivedNewChatBox) {
-                        break;
+                if (chooseUser != null) {
+                    System.out.println("Get the chose user");
+                    for (User value : chooseUser) {
+                        data.append(value.getName());
+                        data.append(",");
                     }
+                    data.append(user.getName());
+                    objectOutputStream.writeObject(new Message(new Date().getTime(), user.getName(),
+                            "0", "CREATE " + data.toString()
+                            + " " + chatName.get(0)));
+                    System.out.println(chatName.get(0));
+                    //  注意返回的报文在报文接收线程中处理，可以创一个新的static变量，循环检测这个变量是否为空
+
+                    System.out.println("Send the create message");
+                    while (true) {
+                        if (hasReceivedNewChatBox) {
+                            break;
+                        }
+                    }
+                    System.out.println("CREATE SUCCESSFULLY");
                 }
-                System.out.println("CREATE SUCCESSFULLY");
                 hasReceivedNewChatBox = false;
                 currentOnlineUser = null;
                 choosedUser.clear();
@@ -366,7 +332,6 @@ public class ChatRoomController implements Initializable  {
         });
         createPrivateChatThread.start();
     }
-
 
     public void test() {
         cardList = FXCollections.observableArrayList();
@@ -425,19 +390,233 @@ public class ChatRoomController implements Initializable  {
         cardList.addAll(chatBoxes);
     }
 
-    public void doSendMessage() throws IOException {
+    public void doSendMessage() throws IOException, InterruptedException {
         String data = textArea.getText();
         if (currentChatBox == null) {
             return;
         }
-        textArea.clear();
+        if (data.equals("")) {
+            return;
+        }
         System.out.println(user);
         System.out.println(currentChatBox);
         Message message = new Message(new Date().getTime(), user.getName(), String.valueOf(currentChatBox.getId()), data);
-        objectOutputStream.writeObject(message);
-        objectOutputStream.flush();
+        try{
+            objectOutputStream.writeObject(message);
+            objectOutputStream.flush();
+            textArea.clear();
+        } catch (SocketException e) {
+            // 创建文本和按钮
+            Text text = new Text("Network Error, please re-login later");
+            Button button = new Button("Yes");
+
+            // 创建一个垂直布局容器，将文本和按钮添加到其中
+            VBox vbox = new VBox(10, text, button);
+            vbox.setAlignment(Pos.CENTER);
+
+            // 创建一个新的场景，将VBox作为根节点添加到其中
+            Scene scene = new Scene(vbox, 300, 200);
+
+            // 将场景设置为新的舞台，并将舞台设置为模态
+            Stage popup = new Stage();
+            popup.initOwner(selfStage);
+            popup.initModality(Modality.APPLICATION_MODAL);
+            popup.setScene(scene);
+
+            // 将弹出窗口显示出来
+            popup.show();
+
+            // 给按钮添加点击事件处理器
+            button.setOnAction(event -> {
+                // 在点击按钮时关闭弹出窗口
+                popup.close();
+                System.exit(0);
+            });
+            popup.setOnCloseRequest(event -> {
+                System.exit(0);
+            });
+
+        }
     }
 
+    public void getGroupMenber() {
+        ObservableList<User> users = FXCollections.observableArrayList();
+        users.addAll(currentChatBox.getUsers());
+        ListView<User> listView = new ListView<>();
+        listView.setItems(users);
+        listView.setCellFactory(new UserFactory());
+        VBox vBox = new VBox();
+        vBox.getChildren().addAll(listView);
+        // 创建一个新的场景并将布局添加到场景中
+        Scene scene = new Scene(vBox, 250, 400);
+
+        // 创建一个新的窗口并将场景添加到窗口中
+        Stage stage = new Stage();
+        stage.setScene(scene);
+        stage.setTitle("Group Members in: " + currentChatBox.getChatName());
+        stage.setOnCloseRequest(event -> {
+            stage.close();
+        });
+        stage.show();
+    }
+
+    public void exitChatRoom() {
+        Text text = new Text("Do you really want to EXIT the chat room?");
+        Button buttonYse = new Button("Yes");
+        Button buttonNo = new Button("No");
+        // 创建一个垂直布局容器，将文本和按钮添加到其中
+        VBox vbox = new VBox(10, text, buttonYse, buttonNo);
+        vbox.setAlignment(Pos.CENTER);
+
+        // 创建一个新的场景，将VBox作为根节点添加到其中
+        Scene scene = new Scene(vbox, 400, 180);
+
+        // 将场景设置为新的舞台，并将舞台设置为模态
+        Stage popup = new Stage();
+        popup.initOwner(selfStage);
+        popup.initModality(Modality.APPLICATION_MODAL);
+        popup.setScene(scene);
+
+        // 将弹出窗口显示出来
+        popup.show();
+
+        // 给按钮添加点击事件处理器
+        buttonYse.setOnAction(event -> {
+            // TODO: 发送删除报文。
+            Message deleteMessage = new Message(new Date().getTime(),
+                    String.valueOf(user.getId()),"0",
+                    "DELETE " + String.valueOf(user.getId()) + " " + String.valueOf(currentChatBox.getId()));
+            try {
+                objectOutputStream.writeObject(deleteMessage);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+            popup.close();
+        });
+        buttonNo.setOnAction(evet -> {
+            popup.close();
+        });
+        popup.setOnCloseRequest(event -> {
+            // TODO: 什么都不作
+            popup.close();
+        });
+    }
+
+    private void runReceiver() {
+        receiveDataThread = new Thread(() -> {
+            try {
+                System.out.println("Thread start");
+
+                objectInputStream = new MyObjectInputStream(socket.getInputStream());
+                System.out.println("create objectInputStream");
+                while (!Thread.currentThread().isInterrupted()){
+                    //TODO: 持续接收消息并解析，作出对应的操作(记得回顾server的操作)
+                    if (socket.isConnected()) {
+                        System.out.println("is connected");
+
+                        Object o = objectInputStream.readObject();
+                        System.out.println("Thread read Object");
+                        Platform.runLater(() -> {
+                            if (o instanceof Message) {
+                                System.out.println("o is a message");
+                                Message message = (Message) o;
+                                String sentTo = message.getSendTo();
+                                String sentBy = message.getSentBy();
+                                long time = message.getTimestamp();
+                                String data = message.getData();
+                                if (sentBy.equals("0")) {
+                                    String leaveUserName = data.split(" ")[0];
+                                    if (user.getName().equals(leaveUserName)) {
+                                        user.getChatBoxList().removeIf(chatBox -> chatBox.getId() == Integer.parseInt(sentTo));
+                                        flashChatBox();
+                                        if (user.getChatBoxList().size() > 0) {
+                                            currentChatBox = user.getChatBoxList().get(0);
+                                            currentTalkingText.setText("      Current Talk With: " + currentChatBox.getChatName());
+                                        } else {
+                                            currentChatBox = new ChatBox();
+                                            currentTalkingText.setText("No Chat");
+                                        }
+                                        flashMessages(currentChatBox);
+                                    } else {
+                                        for (ChatBox chatBox : user.getChatBoxList()) {
+                                            System.out.println("chatBox.getId() = " + chatBox.getId());
+                                            System.out.println("sentTo: " + sentTo);
+                                            if (chatBox.getId() == Integer.parseInt(sentTo)) {
+                                                chatBox.addHistory(message);
+                                                chatBox.getUsers().removeIf(user1 -> user1.getName().equals(leaveUserName));
+                                                if (chatBox.equals(currentChatBox)){
+                                                    flashMessages(chatBox);
+                                                }
+                                                System.out.println("add message to chatBox History");
+                                            }
+                                        }
+                                        flashChatBox();
+                                    }
+                                } else {
+                                    System.out.println("o sent to chat room");
+                                    System.out.println("user.getChatBoxList(): " + user.getChatBoxList());
+                                    for (ChatBox chatBox : user.getChatBoxList()) {
+                                        System.out.println("chatBox.getId() = " + chatBox.getId());
+                                        System.out.println("sentTo: " + sentTo);
+                                        if (chatBox.getId() == Integer.parseInt(sentTo)) {
+                                            chatBox.addHistory(message);
+                                            if (chatBox.equals(currentChatBox)){
+                                                flashMessages(chatBox);
+                                            }
+                                            System.out.println("add message to chatBox History");
+                                        }
+                                    }
+                                    flashChatBox();
+                                }
+                            } else if (o instanceof ChatBox) {
+                                System.out.println("Received a chatBox");
+                                ChatBox chatBox = (ChatBox) o;
+                                user.addChatBox(chatBox);
+                                hasReceivedNewChatBox = true;
+                                flashChatBox();
+                                System.out.println("Create ChatBox");
+                            } else if (o instanceof List) {
+                                currentOnlineUser = (List<User>) o;
+                            }
+                        });
+                    } else {
+                        System.out.println("Socked is not connected, thread exit.");
+                        break;
+                    }
+                }
+
+            } catch (IOException | ClassNotFoundException e) {
+                System.out.println("Socked is not connected, thread interrupt.");
+                Thread.currentThread().interrupt();
+            }
+        });
+        receiveDataThread.start();
+    }
+
+
+    private static class UserFactory implements Callback<ListView<User>, ListCell<User>> {
+
+        @Override
+        public ListCell<User> call(ListView<User> userListView) {
+            return new ListCell<User>() {
+                @Override
+                protected void updateItem(User user, boolean b) {
+                    super.updateItem(user, b);
+                    if (b || Objects.isNull(user)) {
+                        setText(null);
+                        setGraphic(null);
+                        return;
+                    }
+                    VBox wrapper = new VBox();
+                    Label nameLabel = new Label(user.getName());
+                    nameLabel.setStyle("-fx-border-color: green; -fx-border-width: 2px;");
+                    wrapper.getChildren().addAll(nameLabel);
+                    wrapper.setAlignment(Pos.TOP_CENTER);
+                    setGraphic(wrapper);
+                }
+            };
+        }
+    }
 
     private static class ChatBosFactory implements  Callback<ListView<ChatBox>, ListCell<ChatBox>> {
         @Override
@@ -470,6 +649,7 @@ public class ChatRoomController implements Initializable  {
     }
 
     private class MessageCellFactory implements Callback<ListView<Message>, ListCell<Message>> {
+
         @Override
         public ListCell<Message> call(ListView<Message> param) {
             return new ListCell<Message>() {
@@ -480,13 +660,21 @@ public class ChatRoomController implements Initializable  {
                     if (empty || Objects.isNull(msg)) {
                         setText(null);
                         setGraphic(null);
+//                        setMinHeight(0);
+//                        setMaxHeight(0);
                         return;
                     }
 
+
+
                     HBox wrapper = new HBox();
+                    int lines = msg.getData().split("\n").length;
+                    System.out.println(lines);
                     Label nameLabel = new Label(msg.getSentBy());
                     Label msgLabel = new Label(msg.getData());
-
+//                    msgLabel.setPrefHeight(lines * 40);
+//                    setPrefHeight();
+//                    setHeight(lines * 25);
                     nameLabel.setPrefSize(50, 20);
                     nameLabel.setWrapText(true);
                     nameLabel.setStyle("-fx-border-color: black; -fx-border-width: 1px;");
@@ -495,12 +683,21 @@ public class ChatRoomController implements Initializable  {
                         wrapper.setAlignment(Pos.TOP_RIGHT);
                         wrapper.getChildren().addAll(msgLabel, nameLabel);
                         msgLabel.setPadding(new Insets(0, 20, 0, 0));
+                    } else if (msg.getSentBy().equals("0")) {
+                        nameLabel = new Label("Notification: ");
+                        nameLabel.setStyle("-fx-border-color: red; -fx-border-width: 2px;");
+                        msgLabel.setStyle("-fx-border-color: blue;");
+                        wrapper.setAlignment(Pos.TOP_CENTER);
+                        wrapper.getChildren().addAll(nameLabel, msgLabel);
+                        msgLabel.setPadding(new Insets(0, 0, 0, 20));
                     } else {
                         wrapper.setAlignment(Pos.TOP_LEFT);
                         wrapper.getChildren().addAll(nameLabel, msgLabel);
                         msgLabel.setPadding(new Insets(0, 0, 0, 20));
                     }
 
+                    setMinHeight(Control.USE_PREF_SIZE);
+                    setMaxHeight(Double.MAX_VALUE);
                     setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
                     setGraphic(wrapper);
                 }

@@ -62,19 +62,30 @@
                      <children>
                          <ListView fx:id="messageListView" fixedCellSize="50.0" prefHeight="422.0" prefWidth="738.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
                      </children></AnchorPane>
-                <AnchorPane fx:id="textAncho" minHeight="55.0" minWidth="0.0" prefHeight="133.0" prefWidth="738.0">
-                     <children>
-                        <TextArea fx:id="textArea" layoutX="2.0" prefHeight="243.0" prefWidth="738.0" wrapText="true" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-                           <opaqueInsets>
-                              <Insets />
-                           </opaqueInsets>
-                        </TextArea>
-
-                        <Button fx:id="sendMeeage" layoutX="643.0" layoutY="205.0" mnemonicParsing="false" prefHeight="23.0" prefWidth="66.0" text="Send"
-                                AnchorPane.bottomAnchor="20.600000000000012" onAction="#doSendMessage"/>
-<!--                         <Button fx:id="emoji" layoutX="550.0" layoutY="205.0" mnemonicParsing="false" prefHeight="23.0" prefWidth="66.0" text="Emoji"-->
-<!--                                 AnchorPane.bottomAnchor="20.600000000000012"/>-->
-                     </children></AnchorPane>
+                  <StackPane prefHeight="150.0" prefWidth="200.0">
+                      <children>
+                          <BorderPane prefHeight="552.0" prefWidth="738.0">
+                              <top>
+                                  <ButtonBar prefHeight="26.0" prefWidth="738.0" BorderPane.alignment="CENTER">
+                                      <buttons>
+                                          <Button fx:id="getGroupMenber" mnemonicParsing="false" text="Group Member" onAction="#getGroupMenber"/>
+                                          <Button fx:id="exitChatRoomButton" mnemonicParsing="false" prefHeight="23.0" prefWidth="618.0" text="Exit ChatRoom" onAction="#exitChatRoom"/>
+                                      </buttons>
+                                  </ButtonBar>
+                              </top>
+                              <center>
+                                  <TextArea fx:id="textArea" prefHeight="153.0" prefWidth="738.0" wrapText="true" BorderPane.alignment="CENTER">
+                                      <opaqueInsets>
+                                          <Insets />
+                                      </opaqueInsets>
+                                  </TextArea>
+                              </center>
+                              <right>
+                                  <Button fx:id="sendMeeage" mnemonicParsing="false" prefHeight="23.0" prefWidth="66.0" text="Send" BorderPane.alignment="CENTER" onAction="#doSendMessage"/>
+                              </right>
+                          </BorderPane>
+                      </children>
+                  </StackPane>
               </items>
             </SplitPane>
             <ScrollPane layoutY="1.0" prefHeight="578.0" prefWidth="154.0">
