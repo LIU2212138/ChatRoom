@@ -68,17 +68,6 @@ public class privateChooseController {
         thisStage.close();
     }
 
-//    public User getChooseUser() {
-//        if (chooseUser != null) {
-//            Stage thisStage = (Stage) chooseListView.getScene().getWindow();
-//            thisStage.close();
-//            return chooseUser;
-//        } else {
-//            return null;
-//        }
-//
-//    }
-
     static class UserFactory implements Callback<ListView<User>, ListCell<User>> {
         @Override
         public ListCell<User> call(ListView<User> chatBoxListView) {

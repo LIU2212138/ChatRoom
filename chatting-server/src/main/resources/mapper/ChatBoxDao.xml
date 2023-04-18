@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.edu.sustech.cs209.chatting.server.Dao.ChatBoxDao">
+    <insert id="insertChatBox">
+        INSERT INTO cs209.public.chatbox(id, chatname, useridlist, historyidlist)
+        VALUES (#{id}, #{chatName}, #{userIdList,jdbcType=ARRAY,typeHandler=cn.edu.sustech.cs209.chatting.server.ListTypeHandler}, #{historyIdList,jdbcType=ARRAY,typeHandler=cn.edu.sustech.cs209.chatting.server.ListTypeHandler})
+    </insert>
+
+    <update id="updateUserIdList">
+        UPDATE cs209.public.chatbox
+        <set>
+            useridlist = #{useridlist, jdbcType=ARRAY, typeHandler=cn.edu.sustech.cs209.chatting.server.ListTypeHandler}
+        </set>
+        WHERE  id = #{id}
+    </update>
+
+    <update id="updateHistoryIdList">
+        UPDATE cs209.public.chatbox
+        <set>
+            historyidlist = #{historyidlist, jdbcType=ARRAY, typeHandler=cn.edu.sustech.cs209.chatting.server.ListTypeHandler}
+        </set>
+        WHERE  id = #{id}
+    </update>
+
+
+    <select id="selectChatBoxById" resultType="cn.edu.sustech.cs209.chatting.common.ChatBox">
+        SELECT *
+        FROM cs209.public.chatbox
+        WHERE id = #{id}
+    </select>
+    <select id="selectAllChatBox" resultType="cn.edu.sustech.cs209.chatting.common.ChatBox">
+        SELECT *
+        FROM cs209.public.chatbox
+    </select>
+    <select id="selectMaxId" resultType="java.lang.Integer">
+        select max(id) from cs209.public.chatbox
+    </select>
+
+
+</mapper>

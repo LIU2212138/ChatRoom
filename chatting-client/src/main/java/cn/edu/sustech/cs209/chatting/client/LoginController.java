@@ -71,11 +71,13 @@ public class LoginController {
         Message message = new Message(new Date().getTime(), username, "0", "LOGIN " + username + " " + password);
         if (socket.isConnected()) {
             objectOutputStream.writeObject(message);
+            objectOutputStream.flush();
         } else {
             socket = new Socket("localhost", 8080);
             objectOutputStream = new MyObjectOutputStream(socket.getOutputStream());
             objectInputStream = new MyObjectInputStream(socket.getInputStream());
             objectOutputStream.writeObject(message);
+            objectOutputStream.flush();
         }
 
         objectOutputStream.flush();
@@ -100,9 +102,11 @@ public class LoginController {
             controller.setSocket(socket);
 
             controller.hideLogin();
-
-            controller.init();
             Stage newStage = new Stage();
+
+            controller.setSelfStage(newStage);
+            controller.init();
+
             newStage.setTitle("ChatRoom");
             newStage.setScene(scene);
             newStage.show();

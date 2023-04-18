@@ -9,14 +9,18 @@ public class ChatBox implements Serializable {
     int id;
     String chatName;
     List<User> users = new ArrayList<>();
+    List<Integer> userIdList = new ArrayList<>();
     List<Message> History = new ArrayList<>();
+    List<Integer> historyIdList = new ArrayList<>();
 
     public void addUser(User user){
         users.add(user);
+        userIdList.add(user.getId());
     }
 
     public void addHistory(Message message) {
         History.add(message);
+        historyIdList.add(message.getId());
     }
 
     public int getId() {
@@ -49,5 +53,21 @@ public class ChatBox implements Serializable {
 
     public void setChatName(String chatName) {
         this.chatName = chatName;
+    }
+
+    public List<Integer> getUserIdList() {
+        return userIdList;
+    }
+
+    public void setUserIdList(List<Integer> userIdList) {
+        this.userIdList = userIdList;
+    }
+
+    public List<Integer> getHistoryIdList() {
+        return historyIdList;
+    }
+
+    public void setHistoryIdList(List<Integer> historyIdList) {
+        this.historyIdList = historyIdList;
     }
 }

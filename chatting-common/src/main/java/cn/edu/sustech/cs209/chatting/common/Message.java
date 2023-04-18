@@ -3,7 +3,7 @@ package cn.edu.sustech.cs209.chatting.common;
 import java.io.Serializable;
 
 public class Message implements Serializable {
-
+    private int id;
     private Long timestamp;
 
     private String sentBy;
@@ -33,5 +33,29 @@ public class Message implements Serializable {
 
     public String getData() {
         return data;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public void setTimestamp(Long timestamp) {
+        this.timestamp = timestamp;
+    }
+
+    public void setSentBy(String sentBy) {
+        this.sentBy = sentBy;
+    }
+
+    public void setSendTo(String sendTo) {
+        this.sendTo = sendTo;
+    }
+
+    public void setData(String data) {
+        this.data = data;
     }
 }

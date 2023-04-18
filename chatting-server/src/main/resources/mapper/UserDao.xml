@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.edu.sustech.cs209.chatting.server.Dao.UserDao">
+
+    <insert id="insertUser" parameterType="cn.edu.sustech.cs209.chatting.common.User" keyProperty="id" keyColumn="id">
+        INSERT INTO cs209.public.users(id, name, password, indexofchatboxlist)
+        VALUES (#{id}, #{name}, #{passWord}, #{indexOfChatBoxList,jdbcType=ARRAY,typeHandler=cn.edu.sustech.cs209.chatting.server.ListTypeHandler})
+    </insert>
+
+    <update id="updateIndexOfChatBoxList">
+        UPDATE cs209.public.users
+        <set>
+            indexofchatboxlist = #{indexofchatboxlist,jdbcType=ARRAY,typeHandler=cn.edu.sustech.cs209.chatting.server.ListTypeHandler}
+        </set>
+        WHERE id = #{id}
+    </update>
+
+    <select id="selectUserById" resultType="cn.edu.sustech.cs209.chatting.common.User">
+        SELECT * FROM cs209.public.users WHERE id = #{id}
+    </select>
+
+    <select id="selectUserByName" resultType="cn.edu.sustech.cs209.chatting.common.User">
+        SELECT * FROM cs209.public.users WHERE name = #{name}
+    </select>
+    <select id="selectMaxId" resultType="java.lang.Integer">
+        select max(id) from cs209.public.users
+    </select>
+
+
+</mapper>

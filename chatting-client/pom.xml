@@ -28,10 +28,20 @@
             <artifactId>javafx-fxml</artifactId>
             <version>${javafx.version}</version>
         </dependency>
-
+        <dependency>
+            <groupId>org.openjfx</groupId>
+            <artifactId>javafx-graphics</artifactId>
+            <version>${javafx.version}</version>
+        </dependency>
         <dependency>
             <groupId>cn.edu.sustech.cs209.chatting</groupId>
             <artifactId>chatting-common</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>com.madeorsk</groupId>
+            <artifactId>emojisfx</artifactId>
+            <version>1.0</version>
         </dependency>
     </dependencies>
 
