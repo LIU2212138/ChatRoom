@@ -13,7 +13,7 @@ public class ChatBox implements Serializable {
     List<Message> History = new ArrayList<>();
     List<Integer> historyIdList = new ArrayList<>();
 
-    public void addUser(User user){
+    public void addUser(User user) {
         users.add(user);
         userIdList.add(user.getId());
     }

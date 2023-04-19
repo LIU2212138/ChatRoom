@@ -1,27 +1,25 @@
 package cn.edu.sustech.cs209.chatting.server;
 
-import cn.edu.sustech.cs209.chatting.common.*;
-
-import java.io.*;
-import java.net.Socket;
-import java.sql.Time;
-import java.util.*;
-
 import static cn.edu.sustech.cs209.chatting.server.Server.*;
 
-public class SocketThread implements Runnable{
+import cn.edu.sustech.cs209.chatting.common.*;
+import java.io.*;
+import java.net.Socket;
+import java.util.*;
+
+
+
+public class SocketThread implements Runnable {
     private Socket socket;
 
     private final Service service;
 
-    public SocketThread(Socket socket, Service service){
+    public SocketThread(Socket socket, Service service) {
         this.socket = socket;
         this.service = service;
     }
     @Override
     public void run() {
-        BufferedReader bufferedReader = null;
-        PrintWriter writer = null;
         try {
             MyObjectInputStream objectInputStream = new MyObjectInputStream(socket.getInputStream());
             while (!Thread.currentThread().isInterrupted()) {
@@ -30,14 +28,11 @@ public class SocketThread implements Runnable{
                 int id = Integer.parseInt(message.getSendTo());
                 if (id != 0) {
                     System.out.println("received a chat message" + message.getData());
-//                    ChatBox current = idCBMap.get(id);
                     ChatBox current = service.selectChatBoxById(id);
                     message.setId(MSG_IDGENERATOR++);
                     service.insertMessage(message);
                     current.addHistory(message);
-//                    idCBMap.replace(current.getId(), current);
                     service.updateHistoryIdList(current.getHistoryIdList(), current.getId());
-//                    sendMessage(socket, message);
                     for (User user : current.getUsers()) {
                         System.out.println(user);
                         Socket socket1 = userSocMap.get(user.getName());
@@ -54,7 +49,6 @@ public class SocketThread implements Runnable{
                         // HISTORY 16
                         case "HISTORY": {
                             int CBID = Integer.parseInt(dataP[1]);
-//                            List<Message> History = idCBMap.get(CBID).getHistory();
                             List<Message> History = service.selectMessageByDest(String.valueOf(CBID));
                             sendMessage(socket, History);
                             break;
@@ -73,8 +67,8 @@ public class SocketThread implements Runnable{
                             int mayBeID = 0;
                             List<ChatBox> allChatBox = service.selectAllBox();
                             for (ChatBox chatBox : allChatBox) {
-                                if (new HashSet<>(chatBox.getUserIdList()).containsAll(createrUserID) &&
-                                        chatBox.getUserIdList().size() == createrUserID.size()) {
+                                if (new HashSet<>(chatBox.getUserIdList()).containsAll(createrUserID)
+                                        && chatBox.getUserIdList().size() == createrUserID.size()) {
                                     isAlreadyExist = true;
                                     mayBeID = chatBox.getId();
                                     break;
@@ -86,14 +80,13 @@ public class SocketThread implements Runnable{
                                 newChat.setUserIdList(createrUserID);
                                 newChat.setId(CHAT_IDGENERATOR);
                                 newChat.setChatName(dataP[2]);
-//                                idCBMap.put(CHAT_IDGENERATOR, newChat);
                                 service.insertChatBox(newChat);
                                 CHAT_IDGENERATOR++;
                                 for (User user : createUser) {
                                     Socket socket1 = userSocMap.get(user.getName());
                                     user.addChatBox(newChat);
-                                    System.out.println("user.getIndexOfChatBoxList() = " + user.getIndexOfChatBoxList());
-                                    service.updateIndexOfChatBoxList(user.getIndexOfChatBoxList(), user.getId());
+                                    service.updateIndexOfChatBoxList(
+                                            user.getIndexOfChatBoxList(), user.getId());
                                     if (socket1 != null) {
                                         if (socket1.isConnected()) {
                                             sendMessage(socket1, newChat);
@@ -101,7 +94,6 @@ public class SocketThread implements Runnable{
                                     }
                                 }
                             } else {
-//                                ChatBox chatBox = idCBMap.get(mayBeID);
                                 ChatBox chatBox = service.selectChatBoxById(mayBeID);
                                 for (User user : createUser) {
                                     Socket socket1 = userSocMap.get(user.getName());
@@ -117,11 +109,11 @@ public class SocketThread implements Runnable{
                             break;
                         }
                         // LOGIN name password
-                        case "LOGIN" : {
-                            if (dataP.length != 3){
+                        case "LOGIN": {
+                            if (dataP.length != 3) {
                                 sendMessage(socket, "User Name or password can not contain BLANKSPACE");
                             }
-//                            User targetUser = nameUserMap.get(dataP[1]);
+                            //User targetUser = nameUserMap.get(dataP[1]);
                             // 用户不存在则注册
                             User targetUser = service.selectUserByName(dataP[1]);
                             if (targetUser == null) {
@@ -144,14 +136,14 @@ public class SocketThread implements Runnable{
                             break;
                         }
                         //EXIT username
-                        case "EXIT" : {
+                        case "EXIT": {
                             userSocMap.remove(dataP[1]);
                             objectInputStream.close();
                             Thread.currentThread().interrupt();
                             System.out.println("socked is closed");
                             break;
                         }
-                        case "GETAU" : {
+                        case "GETAU": {
                             System.out.println("Received GETAU");
                             List<User> users = new ArrayList<>();
                             for (String name : userSocMap.keySet()) {
@@ -217,8 +209,10 @@ public class SocketThread implements Runnable{
             e.printStackTrace();
         }
     }
+
     public static void sendMessage(Socket socketToSend, Object o) throws IOException {
-        MyObjectOutputStream objectOutputStream = new MyObjectOutputStream(socketToSend.getOutputStream());
+        MyObjectOutputStream objectOutputStream = new MyObjectOutputStream(
+                socketToSend.getOutputStream());
         objectOutputStream.writeObject(o);
         objectOutputStream.flush();
     }

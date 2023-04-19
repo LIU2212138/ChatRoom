@@ -1,7 +1,4 @@
 package cn.edu.sustech.cs209.chatting.client;
-/**
- * Sample Skeleton for 'Untitled' Controller Class
- */
 
 import java.net.URL;
 import java.util.List;
@@ -32,9 +29,12 @@ public class getChatNameController {
 
     @FXML // This method is called by the FXMLLoader when initialization is complete
     void initialize() {
-        assert cancelButton != null : "fx:id=\"cancelButton\" was not injected: check your FXML file 'Untitled'.";
-        assert chatNameTextInput != null : "fx:id=\"chatNameTextInput\" was not injected: check your FXML file 'Untitled'.";
-        assert yesButton != null : "fx:id=\"yesButton\" was not injected: check your FXML file 'Untitled'.";
+        assert cancelButton != null
+                : "fx:id=\"cancelButton\" was not injected: check your FXML file 'Untitled'.";
+        assert chatNameTextInput != null
+                : "fx:id=\"chatNameTextInput\" was not injected: check your FXML file 'Untitled'.";
+        assert yesButton != null
+                : "fx:id=\"yesButton\" was not injected: check your FXML file 'Untitled'.";
 
     }
 

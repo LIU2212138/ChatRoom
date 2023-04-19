@@ -10,6 +10,7 @@ public class User implements Serializable {
     String passWord;
     List<ChatBox> chatBoxList = new ArrayList<>();
     List<Integer> indexOfChatBoxList = new ArrayList<>();
+
     public User(String name, String passWord) {
         this.name = name;
         this.passWord = passWord;
@@ -21,6 +22,7 @@ public class User implements Serializable {
         chatBoxList.add(chatBox);
         indexOfChatBoxList.add(chatBox.getId());
     }
+
     public String getName() {
         return name;
     }

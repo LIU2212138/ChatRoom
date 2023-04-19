@@ -1,17 +1,11 @@
 package cn.edu.sustech.cs209.chatting.client;
 
-/**
- * Sample Skeleton for 'Untitled' Controller Class
- */
-
+import cn.edu.sustech.cs209.chatting.common.*;
 import java.io.IOException;
-import java.net.Socket;
 import java.net.URL;
 import java.util.List;
 import java.util.Objects;
 import java.util.ResourceBundle;
-
-import cn.edu.sustech.cs209.chatting.common.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -59,7 +53,7 @@ public class privateChooseController {
     }
 
     @FXML
-    void choose() throws IOException, ClassNotFoundException {
+    void choose() {
         MultipleSelectionModel<User> selectionModel = chooseListView.getSelectionModel();
         User User = selectionModel.getSelectedItem();
         chooseUser.add(User);

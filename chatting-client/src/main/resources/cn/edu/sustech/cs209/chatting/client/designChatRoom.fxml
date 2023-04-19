@@ -37,7 +37,7 @@
 <?import javafx.scene.effect.Blend?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.Text?>
-<VBox fx:id="basicVBox" prefHeight="622.0" prefWidth="894.0" xmlns="http://javafx.com/javafx/8.0.301" xmlns:fx="http://javafx.com/fxml/1"
+<VBox fx:id="basicvbox" prefHeight="622.0" prefWidth="894.0" xmlns="http://javafx.com/javafx/8.0.301" xmlns:fx="http://javafx.com/fxml/1"
       fx:controller="cn.edu.sustech.cs209.chatting.client.ChatRoomController">
   <children>
       <Text fx:id="currentTalkingText" strokeType="OUTSIDE" strokeWidth="0.0" text="      Current Talk With: UserName" wrappingWidth="300.62729835510254" />
@@ -60,7 +60,7 @@
               <items>
                 <AnchorPane fx:id="messageDisplayArea" minHeight="0.0" minWidth="0.0" prefHeight="272.0" prefWidth="738.0">
                      <children>
-                         <ListView fx:id="messageListView" fixedCellSize="50.0" prefHeight="422.0" prefWidth="738.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+                         <ListView fx:id="messageListView" prefHeight="422.0" prefWidth="738.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
                      </children></AnchorPane>
                   <StackPane prefHeight="150.0" prefWidth="200.0">
                       <children>

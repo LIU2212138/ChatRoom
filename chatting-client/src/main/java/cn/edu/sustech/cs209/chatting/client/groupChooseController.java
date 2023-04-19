@@ -1,27 +1,17 @@
 package cn.edu.sustech.cs209.chatting.client;
-/**
- * Sample Skeleton for 'Untitled' Controller Class
- */
 
+import cn.edu.sustech.cs209.chatting.common.User;
 import java.io.IOException;
 import java.net.URL;
 import java.util.List;
-import java.util.Objects;
 import java.util.ResourceBundle;
-
-import cn.edu.sustech.cs209.chatting.common.User;
-import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-import javafx.geometry.Pos;
-import javafx.scene.Scene;
 import javafx.scene.control.*;
-import javafx.scene.layout.VBox;
-import javafx.stage.Stage;
-import javafx.util.Callback;
 import javafx.scene.control.TextField;
+import javafx.stage.Stage;
+
 public class groupChooseController {
 
     @FXML // ResourceBundle that was given to the FXMLLoader
@@ -48,13 +38,18 @@ public class groupChooseController {
     private List<User> chooseUser;
 
     private String userName;
+
     @FXML // This method is called by the FXMLLoader when initialization is complete
     void initialize() {
-        assert Choose != null : "fx:id=\"Choose\" was not injected: check your FXML file 'Untitled'.";
-        assert grpupChooseListview != null : "fx:id=\"grpupChooseListview\" was not injected: check your FXML file 'Untitled'.";
+        assert Choose != null
+                : "fx:id=\"Choose\" was not injected: check your FXML file 'Untitled'.";
+        assert grpupChooseListview != null
+                : "fx:id=\"grpupChooseListview\" was not injected: check your FXML file 'Untitled'.";
 
     }
-    boolean init(List<User> users, User self, List<User> chooseUser, List<String> chooseName, String userName) throws IOException, ClassNotFoundException {
+
+    void init(List<User> users, User self, List<User> chooseUser,
+                 List<String> chooseName, String userName) throws IOException, ClassNotFoundException {
         this.chooseUser = chooseUser;
         this.users = users;
         this.self = self;
@@ -66,7 +61,6 @@ public class groupChooseController {
         observableList.setAll(users);
         MultipleSelectionModel<User> selectionModel = grpupChooseListview.getSelectionModel();
         selectionModel.setSelectionMode(SelectionMode.MULTIPLE);
-        return true;
     }
 
     @FXML
@@ -82,37 +76,10 @@ public class groupChooseController {
     }
 
     @FXML
-    void choose() throws IOException, ClassNotFoundException {
+    void choose() {
         MultipleSelectionModel<User> selectionModel = grpupChooseListview.getSelectionModel();
         ObservableList<User> user = selectionModel.getSelectedItems();
-//        Thread getCHatNameThread = new Thread(() -> {
-//            try {
-//                FXMLLoader fxmlLoader = new FXMLLoader(GetChatNameControllerApplication.class.getResource("designGerChatName.fxml"));
-//                Scene scene = new Scene(fxmlLoader.load(),  468.0, 205.0);
-//
-//                getChatNameController getChatNameController = fxmlLoader.getController();
-//                StringBuilder defaultName = new StringBuilder("GroupChatWith: " + userName);
-//                for (User user1 : user) {
-//                    defaultName.append(",");
-//                    defaultName.append(user1.getName());
-//                }
-//                getChatNameController.init(defaultName.toString(), chooseName);
-//                System.out.println("Init the getChatNameController");
-//                Platform.runLater(() -> {
-//                    Stage newStage = new Stage();
-//                    newStage.setScene(scene);
-//                    System.out.println("set the scene");
-//                    newStage.setTitle("Please give this chat a name.");
-//                    System.out.println("set the title");
-//                    newStage.show();
-//                    System.out.println("show");
-//                });
-//            } catch (IOException e) {
-//                e.printStackTrace();
-//            }
-//
-//        });
-//        getCHatNameThread.start();
+
         String name = getNameField.getText();
         System.out.println(name);
         chooseName.add(name);
