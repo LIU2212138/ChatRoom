@@ -1,11 +1,10 @@
 package cn.edu.sustech.cs209.chatting.client;
 
-import cn.edu.sustech.cs209.chatting.common.*;
-import java.io.IOException;
-import java.net.URL;
-import java.util.List;
-import java.util.Objects;
-import java.util.ResourceBundle;
+/**
+ * Sample Skeleton for 'Untitled' Controller Class
+ */
+
+import cn.edu.sustech.cs209.chatting.common.User;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -14,6 +13,12 @@ import javafx.scene.control.*;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import javafx.util.Callback;
+
+import java.io.IOException;
+import java.net.URL;
+import java.util.List;
+import java.util.Objects;
+import java.util.ResourceBundle;
 
 public class privateChooseController {
 
@@ -34,26 +39,33 @@ public class privateChooseController {
 
     private List<User> chooseUser;
 
+    Stage selfStage;
+
     @FXML // This method is called by the FXMLLoader when initialization is complete
     void initialize() {
         assert chooseListView != null : "fx:id=\"chooseListView\" was not injected: check your FXML file 'Untitled'.";
 
     }
-    boolean init(List<User> users, User self, List<User> chooseUser) throws IOException, ClassNotFoundException {
+    boolean init(List<User> users, User self, List<User> chooseUser, Stage selfStage) throws IOException, ClassNotFoundException {
         this.chooseUser = chooseUser;
         this.users = users;
         this.self = self;
+        this.selfStage = selfStage;
         observableList = FXCollections.observableArrayList();
         chooseListView.setCellFactory(new UserFactory());
         chooseListView.setItems(observableList);
         observableList.setAll(users);
         MultipleSelectionModel<User> selectionModel = chooseListView.getSelectionModel();
         selectionModel.setSelectionMode(SelectionMode.SINGLE);
+        selfStage.setOnCloseRequest(event -> {
+            chooseUser.add(null);
+            selfStage.close();
+        });
         return true;
     }
 
     @FXML
-    void choose() {
+    void choose() throws IOException, ClassNotFoundException {
         MultipleSelectionModel<User> selectionModel = chooseListView.getSelectionModel();
         User User = selectionModel.getSelectedItem();
         chooseUser.add(User);

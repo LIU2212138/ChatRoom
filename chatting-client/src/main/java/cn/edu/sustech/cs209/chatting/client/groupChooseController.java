@@ -1,16 +1,19 @@
 package cn.edu.sustech.cs209.chatting.client;
+/**
+ * Sample Skeleton for 'Untitled' Controller Class
+ */
 
 import cn.edu.sustech.cs209.chatting.common.User;
-import java.io.IOException;
-import java.net.URL;
-import java.util.List;
-import java.util.ResourceBundle;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
-import javafx.scene.control.TextField;
 import javafx.stage.Stage;
+
+import java.io.IOException;
+import java.net.URL;
+import java.util.List;
+import java.util.ResourceBundle;
 
 public class groupChooseController {
 
@@ -39,28 +42,32 @@ public class groupChooseController {
 
     private String userName;
 
+    Stage selfStage;
     @FXML // This method is called by the FXMLLoader when initialization is complete
     void initialize() {
-        assert Choose != null
-                : "fx:id=\"Choose\" was not injected: check your FXML file 'Untitled'.";
-        assert grpupChooseListview != null
-                : "fx:id=\"grpupChooseListview\" was not injected: check your FXML file 'Untitled'.";
+        assert Choose != null : "fx:id=\"Choose\" was not injected: check your FXML file 'Untitled'.";
+        assert grpupChooseListview != null : "fx:id=\"grpupChooseListview\" was not injected: check your FXML file 'Untitled'.";
 
     }
-
-    void init(List<User> users, User self, List<User> chooseUser,
-                 List<String> chooseName, String userName) throws IOException, ClassNotFoundException {
+    boolean init(List<User> users, User self, List<User> chooseUser, List<String> chooseName, String userName, Stage selfStage) throws IOException, ClassNotFoundException {
         this.chooseUser = chooseUser;
         this.users = users;
         this.self = self;
         this.chooseName = chooseName;
         this.userName = userName;
+        this.selfStage = selfStage;
         observableList = FXCollections.observableArrayList();
         grpupChooseListview.setCellFactory(new privateChooseController.UserFactory());
         grpupChooseListview.setItems(observableList);
         observableList.setAll(users);
         MultipleSelectionModel<User> selectionModel = grpupChooseListview.getSelectionModel();
         selectionModel.setSelectionMode(SelectionMode.MULTIPLE);
+        selfStage.setOnCloseRequest(event -> {
+            chooseName.add(null);
+            chooseUser.add(null);
+            selfStage.close();
+        });
+        return true;
     }
 
     @FXML
@@ -76,10 +83,9 @@ public class groupChooseController {
     }
 
     @FXML
-    void choose() {
+    void choose() throws IOException, ClassNotFoundException {
         MultipleSelectionModel<User> selectionModel = grpupChooseListview.getSelectionModel();
         ObservableList<User> user = selectionModel.getSelectedItems();
-
         String name = getNameField.getText();
         System.out.println(name);
         chooseName.add(name);

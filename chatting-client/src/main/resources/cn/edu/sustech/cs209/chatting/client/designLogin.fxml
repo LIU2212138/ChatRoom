@@ -8,7 +8,7 @@
 <?import javafx.scene.text.Text?>
 
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="215.0" prefWidth="543.0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="cn.edu.sustech.cs209.chatting.client.LoginController">
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="215.0" prefWidth="543.0" xmlns="http://javafx.com/javafx/8.0.301" xmlns:fx="http://javafx.com/fxml/1" fx:controller="cn.edu.sustech.cs209.chatting.client.LoginController">
    <children>
       <TextField fx:id="usernameInput" layoutX="187.0" layoutY="76.0" prefHeight="23.0" prefWidth="162.0" AnchorPane.bottomAnchor="116.0" AnchorPane.leftAnchor="187.0" AnchorPane.rightAnchor="143.0" AnchorPane.topAnchor="76.0" />
       <PasswordField fx:id="passwordInput" layoutX="187.0" layoutY="115.0" AnchorPane.bottomAnchor="76.80000000000001" AnchorPane.leftAnchor="187.0" AnchorPane.rightAnchor="143.39999999999998" AnchorPane.topAnchor="115.0" />

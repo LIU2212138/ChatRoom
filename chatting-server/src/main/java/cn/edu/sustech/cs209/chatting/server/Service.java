@@ -6,14 +6,15 @@ import cn.edu.sustech.cs209.chatting.common.User;
 import cn.edu.sustech.cs209.chatting.server.Dao.ChatBoxDao;
 import cn.edu.sustech.cs209.chatting.server.Dao.MessageDao;
 import cn.edu.sustech.cs209.chatting.server.Dao.UserDao;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.List;
 import org.apache.ibatis.io.Resources;
 import org.apache.ibatis.session.SqlSession;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.apache.ibatis.session.SqlSessionFactoryBuilder;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Service {
     String resource = "mybatis-config.xml";
@@ -23,8 +24,8 @@ public class Service {
     UserDao userDao = session.getMapper(UserDao.class);
     MessageDao messageDao = session.getMapper(MessageDao.class);
     ChatBoxDao chatBoxDao = session.getMapper(ChatBoxDao.class);
-
-    public Service() throws IOException {}
+    public Service() throws IOException {
+    }
 
     public boolean insertUser(User user) {
         return userDao.insertUser(user);
@@ -45,7 +46,7 @@ public class Service {
             chatBox.setHistoryIdList(messageIdList);
             chatBox.setHistory(messageList);
             List<User> userList = new ArrayList<>();
-            for (int usrId : chatBox.getUserIdList()) {
+            for (int usrId: chatBox.getUserIdList()) {
                 userList.add(userDao.selectUserById(usrId));
             }
             chatBox.setUsers(userList);
@@ -74,7 +75,7 @@ public class Service {
             chatBox.setHistoryIdList(messageIdList);
             chatBox.setHistory(messageList);
             List<User> userList = new ArrayList<>();
-            for (int usrId : chatBox.getUserIdList()) {
+            for (int usrId: chatBox.getUserIdList()) {
                 userList.add(userDao.selectUserById(usrId));
             }
             chatBox.setUsers(userList);
@@ -113,13 +114,12 @@ public class Service {
         return chatBoxDao.selectMaxId();
     }
 
-    public ChatBox selectChatBoxById(int id) {
+    public ChatBox selectChatBoxById(int id){
         ChatBox chatBox = chatBoxDao.selectChatBoxById(id);
-        List<Message> messageList = new ArrayList<>(
-                messageDao.selectMessageByDest(String.valueOf(chatBox.getId())));
+        List<Message> messageList = new ArrayList<>(messageDao.selectMessageByDest(String.valueOf(chatBox.getId())));
 
         List<User> userList = new ArrayList<>();
-        for (int usrId : chatBox.getUserIdList()) {
+        for (int usrId: chatBox.getUserIdList()) {
             userList.add(userDao.selectUserById(usrId));
         }
         chatBox.setHistory(messageList);
@@ -138,7 +138,7 @@ public class Service {
     }
 
 
-    public void updateHistoryIdList(List<Integer> historyIdList, int id) {
+    public void updateHistoryIdList( List<Integer> historyIdList, int id) {
         chatBoxDao.updateHistoryIdList(id, historyIdList);
     }
 

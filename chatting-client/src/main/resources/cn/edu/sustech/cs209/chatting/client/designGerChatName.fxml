@@ -7,7 +7,7 @@
 <?import javafx.scene.text.Text?>
 
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="205.0" prefWidth="468.0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="205.0" prefWidth="468.0" xmlns="http://javafx.com/javafx/8.0.301" xmlns:fx="http://javafx.com/fxml/1"
             fx:controller="cn.edu.sustech.cs209.chatting.client.getChatNameController">
    <children>
       <Button fx:id="yesButton" layoutX="249.0" layoutY="155.0" mnemonicParsing="false" prefHeight="23.0" prefWidth="119.0" text="Yes" AnchorPane.bottomAnchor="26.8" AnchorPane.leftAnchor="249.0" AnchorPane.rightAnchor="99.8" AnchorPane.topAnchor="155.0"

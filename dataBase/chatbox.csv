@@ -1,0 +1,5 @@
+#,id,chatname,useridlist,historyidlist
+1,3,"user3,user1",{1},"{4,8}"
+2,1,"ChatRoomWith:user1,user2,user3","{2,1}","{1,2,6,7,9,10,11}"
+3,2,"user2,user1","{1,2}","{3,5,12}"
+,,

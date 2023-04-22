@@ -37,11 +37,11 @@
 <?import javafx.scene.effect.Blend?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.Text?>
-<VBox fx:id="basicvbox" prefHeight="622.0" prefWidth="894.0" xmlns="http://javafx.com/javafx/8.0.301" xmlns:fx="http://javafx.com/fxml/1"
+<VBox fx:id="basicVBox" prefHeight="622.0" prefWidth="894.0" xmlns="http://javafx.com/javafx/8.0.301" xmlns:fx="http://javafx.com/fxml/1"
       fx:controller="cn.edu.sustech.cs209.chatting.client.ChatRoomController">
   <children>
       <Text fx:id="currentTalkingText" strokeType="OUTSIDE" strokeWidth="0.0" text="      Current Talk With: UserName" wrappingWidth="300.62729835510254" />
-    <MenuBar fx:id="menuBar" opacity="0.55" prefHeight="26.0" prefWidth="817.0" style="-fx-background-color: sdf;" VBox.vgrow="NEVER">
+    <MenuBar fx:id="menuBar" opacity="0.55" prefHeight="26.0" prefWidth="817.0" style="-fx-background-color: orange;" VBox.vgrow="NEVER">
       <menus>
         <Menu fx:id="menu" mnemonicParsing="false" text="New Chat">
                <items>
@@ -56,7 +56,7 @@
     </MenuBar>
     <AnchorPane fx:id="BasicPane" maxHeight="-1.0" maxWidth="-1.0" prefHeight="648.0" prefWidth="894.0" VBox.vgrow="ALWAYS">
       <children>
-            <SplitPane fx:id="splitPane" dividerPositions="0.6868932038834951" layoutX="155.0" layoutY="1.0" orientation="VERTICAL" prefHeight="578.0" prefWidth="738.0">
+            <SplitPane fx:id="splitPane" dividerPositions="0.6868932038834951" layoutX="155.0" layoutY="1.0" orientation="VERTICAL" prefHeight="578.0" prefWidth="738.0" >
               <items>
                 <AnchorPane fx:id="messageDisplayArea" minHeight="0.0" minWidth="0.0" prefHeight="272.0" prefWidth="738.0">
                      <children>
@@ -68,8 +68,8 @@
                               <top>
                                   <ButtonBar prefHeight="26.0" prefWidth="738.0" BorderPane.alignment="CENTER">
                                       <buttons>
-                                          <Button fx:id="getGroupMenber" mnemonicParsing="false" text="Group Member" onAction="#getGroupMenber"/>
-                                          <Button fx:id="exitChatRoomButton" mnemonicParsing="false" prefHeight="23.0" prefWidth="618.0" text="Exit ChatRoom" onAction="#exitChatRoom"/>
+                                          <Button fx:id="getGroupMenber" mnemonicParsing="false" text="Group Member" onAction="#getGroupMenber" style="-fx-background-color: orange;"/>
+                                          <Button fx:id="exitChatRoomButton" mnemonicParsing="false" prefHeight="23.0" prefWidth="618.0" text="Exit ChatRoom" onAction="#exitChatRoom" style="-fx-background-color: orange;"/>
                                       </buttons>
                                   </ButtonBar>
                               </top>
@@ -81,7 +81,7 @@
                                   </TextArea>
                               </center>
                               <right>
-                                  <Button fx:id="sendMeeage" mnemonicParsing="false" prefHeight="23.0" prefWidth="66.0" text="Send" BorderPane.alignment="CENTER" onAction="#doSendMessage"/>
+                                  <Button fx:id="sendMeeage" mnemonicParsing="false" prefHeight="23.0" prefWidth="66.0" text="Send" BorderPane.alignment="CENTER" onAction="#doSendMessage" style="-fx-background-color: orange;"/>
                               </right>
                           </BorderPane>
                       </children>

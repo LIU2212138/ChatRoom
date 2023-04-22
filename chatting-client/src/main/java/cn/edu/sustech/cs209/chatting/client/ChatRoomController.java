@@ -1,15 +1,11 @@
 package cn.edu.sustech.cs209.chatting.client;
 
-import cn.edu.sustech.cs209.chatting.common.ChatBox;
-import cn.edu.sustech.cs209.chatting.common.Message;
-import cn.edu.sustech.cs209.chatting.common.MyObjectInputStream;
-import cn.edu.sustech.cs209.chatting.common.MyObjectOutputStream;
-import cn.edu.sustech.cs209.chatting.common.User;
-import java.io.IOException;
-import java.net.Socket;
-import java.net.SocketException;
-import java.net.URL;
-import java.util.*;
+/**
+ * Sample Skeleton for 'Design.fxml' Controller Class
+ */
+
+
+import cn.edu.sustech.cs209.chatting.common.*;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -20,12 +16,19 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
-import javafx.scene.layout.*;
+import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.util.Callback;
 
+import java.io.IOException;
+import java.net.Socket;
+import java.net.SocketException;
+import java.net.URL;
+import java.util.*;
 
 public class ChatRoomController implements Initializable  {
 
@@ -43,7 +46,7 @@ public class ChatRoomController implements Initializable  {
     private AnchorPane BasicPane; // Value injected by FXMLLoader
 
     @FXML // fx:id="basicVBox"
-    private VBox basicvbox; // Value injected by FXMLLoader
+    private VBox basicVBox; // Value injected by FXMLLoader
 
     @FXML // fx:id="chatBoxList"
     private VBox chatBoxList; // Value injected by FXMLLoader
@@ -108,6 +111,8 @@ public class ChatRoomController implements Initializable  {
     public List<String> chatName;
     private Stage selfStage;
 
+    private final Object lock = new Object();
+
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
     }
@@ -151,6 +156,7 @@ public class ChatRoomController implements Initializable  {
                 try {
                     objectOutputStream.writeObject(new Message(new Date().getTime(), user.getName(),
                             "0", "EXIT " + user.getName()));
+                    objectOutputStream.flush();
                     objectInputStream.close();
                     objectOutputStream.close();
                     socket.close();
@@ -169,7 +175,7 @@ public class ChatRoomController implements Initializable  {
         }
     }
 
-    public void CreatePrivateChat() {
+    public void CreatePrivateChat() throws IOException {
         Thread createPrivateChatThread = new Thread(() -> {
             try {
                 if (socket.isConnected()) {
@@ -182,28 +188,33 @@ public class ChatRoomController implements Initializable  {
                     objectInputStream = new MyObjectInputStream(socket.getInputStream());
                     objectOutputStream.writeObject(new Message(new Date().getTime(), user.getName(),
                             "0", "GETAU"));
+                    objectOutputStream.flush();
                 }
                 while (true) {
                     if (currentOnlineUser != null) {
                         break;
+                    } else {
+                        System.out.println("currentOnlineUser is null");
                     }
                 }
                 System.out.println("GET the CurrentOnlineUsers");
-                FXMLLoader fxmlLoader = new FXMLLoader(
-                        privateChooseControllerApplication.class.getResource(
-                                "designPrivateChooseController.fxml"));
+                FXMLLoader fxmlLoader = new FXMLLoader(privateChooseControllerApplication.class.getResource("designPrivateChooseController.fxml"));
                 Scene scene = new Scene(fxmlLoader.load(),  251.0, 494.0);
                 privateChooseController privateChooseController = fxmlLoader.getController();
-                privateChooseController.init(currentOnlineUser, user, choosedUser);
+
                 Platform.runLater(() -> {
                     Stage newStage = new Stage();
+                    try {
+                        privateChooseController.init(currentOnlineUser, user, choosedUser, newStage);
+                    } catch (IOException | ClassNotFoundException e) {
+                        System.out.println(e.getMessage());
+                    }
                     newStage.setScene(scene);
                     newStage.setTitle("Create A private Chat");
-                    newStage.setOnCloseRequest(event -> choosedUser.add(null));
                     newStage.show();
                 });
 
-                User chooseUser;
+                User chooseUser ;
                 while (true) {
                     if (choosedUser.size() != 0) {
                         chooseUser = choosedUser.get(0);
@@ -218,7 +229,8 @@ public class ChatRoomController implements Initializable  {
 
                     objectOutputStream.writeObject(new Message(new Date().getTime(), user.getName(),
                             "0", "CREATE " + user.getName() + "," + chooseUser.getName()
-                            + " " + chooseUser.getName()));
+                            + " " + chooseUser.getName() + "," + user.getName()));
+                    objectOutputStream.flush();
 
                     System.out.println("Send the create message");
                     while (true) {
@@ -227,11 +239,14 @@ public class ChatRoomController implements Initializable  {
                         }
                     }
                     System.out.println("CREATE SUCCESSFULLY");
+                } else {
+                    System.out.println("choose user is null, create failed 236");
                 }
                 hasReceivedNewChatBox = false;
                 currentOnlineUser = null;
                 choosedUser.clear();
-            } catch (IOException | ClassNotFoundException e) {
+                System.out.println("Data has been cleared");
+            } catch (IOException e) {
                 e.printStackTrace();
             }
 
@@ -243,38 +258,43 @@ public class ChatRoomController implements Initializable  {
         Thread createPrivateChatThread = new Thread(() -> {
             try {
                 if (socket.isConnected()) {
+                    System.out.println("send GETAU");
                     objectOutputStream.writeObject(new Message(new Date().getTime(), user.getName(),
                             "0", "GETAU"));
                     objectOutputStream.flush();
                 } else {
+                    System.out.println("reconnected and send GETAU");
                     socket = new Socket("localhost", 8080);
                     objectOutputStream = new MyObjectOutputStream(socket.getOutputStream());
                     objectInputStream = new MyObjectInputStream(socket.getInputStream());
                     objectOutputStream.writeObject(new Message(new Date().getTime(), user.getName(),
                             "0", "GETAU"));
+                    objectOutputStream.flush();
                 }
                 while (true) {
                     if (currentOnlineUser != null) {
                         break;
+                    } else {
+                        System.out.println(currentOnlineUser);
                     }
                 }
                 System.out.println("GET the CurrentOnlineUsers");
-                FXMLLoader fxmlLoader = new FXMLLoader(
-                        privateChooseControllerApplication.class.getResource(
-                                "designGroupChooseController.fxml"));
+                FXMLLoader fxmlLoader = new FXMLLoader(privateChooseControllerApplication.class.getResource("designGroupChooseController.fxml"));
                 Scene scene = new Scene(fxmlLoader.load(),  234.0, 535.0);
                 groupChooseController groupChooseController = fxmlLoader.getController();
-                groupChooseController.init(
-                        currentOnlineUser, user, choosedUser, chatName, user.getName());
                 Platform.runLater(() -> {
                     Stage newStage = new Stage();
+                    try {
+                        groupChooseController.init(currentOnlineUser, user, choosedUser, chatName, user.getName(), newStage);
+                    } catch (IOException | ClassNotFoundException e) {
+                        System.out.println(e.getMessage());
+                    }
                     newStage.setScene(scene);
                     newStage.setTitle("Create A group Chat");
-                    newStage.setOnCloseRequest(event -> choosedUser.add(null));
                     newStage.show();
                 });
 
-                List<User> chooseUser;
+                List<User> chooseUser ;
                 while (true) {
                     if (choosedUser.size() != 0) {
                         if (choosedUser.get(0) != null) {
@@ -284,9 +304,12 @@ public class ChatRoomController implements Initializable  {
                             chooseUser = null;
                         }
                         break;
+                    } else {
+                        System.out.println(choosedUser);
                     }
                 }
 
+                System.out.println("move to 301");
                 //  发送报文申请创建新的对话，检测返回的对话是否已存在，若存在，则直接使用之前的会话，否则创建新的
                 StringBuilder data = new StringBuilder();
                 if (chooseUser != null) {
@@ -297,28 +320,58 @@ public class ChatRoomController implements Initializable  {
                     }
                     data.append(user.getName());
                     objectOutputStream.writeObject(new Message(new Date().getTime(), user.getName(),
-                            "0", "CREATE " + data
+                            "0", "CREATE " + data.toString()
                             + " " + chatName.get(0)));
+                    objectOutputStream.flush();
                     System.out.println(chatName.get(0));
                     //  注意返回的报文在报文接收线程中处理，可以创一个新的static变量，循环检测这个变量是否为空
 
                     System.out.println("Send the create message");
                     while (true) {
                         if (hasReceivedNewChatBox) {
+                            System.out.println("hasReceivedNewChatBox = " + hasReceivedNewChatBox );
                             break;
+                        } else {
+                            System.out.println("Have not ReceivedNewChatBox yet");
                         }
                     }
                     System.out.println("CREATE SUCCESSFULLY");
+                } else {
+                    System.out.println("chose user is null, create failed");
                 }
                 hasReceivedNewChatBox = false;
                 currentOnlineUser = null;
                 choosedUser.clear();
                 chatName.clear();
-            } catch (IOException | ClassNotFoundException e) {
+                System.out.println("Data has been cleared");
+            } catch (IOException e) {
                 e.printStackTrace();
             }
         });
         createPrivateChatThread.start();
+    }
+
+    public void test() {
+        cardList = FXCollections.observableArrayList();
+        chatBoxListView.setItems(cardList);
+        chatBoxListView.setCellFactory(new ChatBosFactory());
+        messageObservableList = FXCollections.observableArrayList();
+        messageListView.setItems(messageObservableList);
+        messageListView.setCellFactory(new MessageCellFactory());
+
+        Message message = new Message(new Date().getTime(), user.getName(), "0", "Test");
+
+        messageObservableList.add(message);
+
+        User user1 = new User("user!", "iiiii");
+        ChatBox chatBox = new ChatBox();
+        chatBox.setChatName("TestChat");
+        chatBox.setId(1);
+        chatBox.addUser(user1);
+        chatBox.addUser(user);
+        chatBox.addHistory(message);
+        cardList.clear();
+        cardList.add(chatBox);
     }
 
     public void hideLogin() {
@@ -336,7 +389,6 @@ public class ChatRoomController implements Initializable  {
         currentTalkingText.setText("      Current Talk With: " + currentChatBox.getChatName());
         System.out.println(currentChatBox.getChatName());
     }
-
     public void flashMessages(ChatBox chatBox) {
         messageObservableList.clear();
         if (chatBox == null) {
@@ -356,7 +408,7 @@ public class ChatRoomController implements Initializable  {
         cardList.addAll(chatBoxes);
     }
 
-    public void doSendMessage() throws IOException {
+    public void doSendMessage() throws IOException, InterruptedException {
         String data = textArea.getText();
         if (currentChatBox == null) {
             return;
@@ -367,7 +419,7 @@ public class ChatRoomController implements Initializable  {
         System.out.println(user);
         System.out.println(currentChatBox);
         Message message = new Message(new Date().getTime(), user.getName(), String.valueOf(currentChatBox.getId()), data);
-        try {
+        try{
             objectOutputStream.writeObject(message);
             objectOutputStream.flush();
             textArea.clear();
@@ -398,7 +450,9 @@ public class ChatRoomController implements Initializable  {
                 popup.close();
                 System.exit(0);
             });
-            popup.setOnCloseRequest(event -> System.exit(0));
+            popup.setOnCloseRequest(event -> {
+                System.exit(0);
+            });
 
         }
     }
@@ -418,7 +472,9 @@ public class ChatRoomController implements Initializable  {
         Stage stage = new Stage();
         stage.setScene(scene);
         stage.setTitle("Group Members in: " + currentChatBox.getChatName());
-        stage.setOnCloseRequest(event -> stage.close());
+        stage.setOnCloseRequest(event -> {
+            stage.close();
+        });
         stage.show();
     }
 
@@ -446,16 +502,19 @@ public class ChatRoomController implements Initializable  {
         buttonYse.setOnAction(event -> {
             // TODO: 发送删除报文。
             Message deleteMessage = new Message(new Date().getTime(),
-                    String.valueOf(user.getId()), "0",
-                    "DELETE " + user.getId() + " " + currentChatBox.getId());
+                    String.valueOf(user.getId()),"0",
+                    "DELETE " + String.valueOf(user.getId()) + " " + String.valueOf(currentChatBox.getId()));
             try {
                 objectOutputStream.writeObject(deleteMessage);
+                objectOutputStream.flush();
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
             popup.close();
         });
-        buttonNo.setOnAction(evet -> popup.close());
+        buttonNo.setOnAction(evet -> {
+            popup.close();
+        });
         popup.setOnCloseRequest(event -> {
             // TODO: 什么都不作
             popup.close();
@@ -469,7 +528,7 @@ public class ChatRoomController implements Initializable  {
 
                 objectInputStream = new MyObjectInputStream(socket.getInputStream());
                 System.out.println("create objectInputStream");
-                while (!Thread.currentThread().isInterrupted()) {
+                while (!Thread.currentThread().isInterrupted()){
                     //TODO: 持续接收消息并解析，作出对应的操作(记得回顾server的操作)
                     if (socket.isConnected()) {
                         System.out.println("is connected");
@@ -482,19 +541,16 @@ public class ChatRoomController implements Initializable  {
                                 Message message = (Message) o;
                                 String sentTo = message.getSendTo();
                                 String sentBy = message.getSentBy();
+                                long time = message.getTimestamp();
                                 String data = message.getData();
                                 if (sentBy.equals("0")) {
                                     String leaveUserName = data.split(" ")[0];
                                     if (user.getName().equals(leaveUserName)) {
-                                        user.getChatBoxList().removeIf(
-                                                chatBox -> chatBox.getId()
-                                                        == Integer.parseInt(sentTo));
+                                        user.getChatBoxList().removeIf(chatBox -> chatBox.getId() == Integer.parseInt(sentTo));
                                         flashChatBox();
                                         if (user.getChatBoxList().size() > 0) {
                                             currentChatBox = user.getChatBoxList().get(0);
-                                            currentTalkingText.setText(
-                                                    "      Current Talk With: "
-                                                            + currentChatBox.getChatName());
+                                            currentTalkingText.setText("      Current Talk With: " + currentChatBox.getChatName());
                                         } else {
                                             currentChatBox = new ChatBox();
                                             currentTalkingText.setText("No Chat");
@@ -502,32 +558,28 @@ public class ChatRoomController implements Initializable  {
                                         flashMessages(currentChatBox);
                                     } else {
                                         for (ChatBox chatBox : user.getChatBoxList()) {
-                                            System.out.println("chatBox.getId() = "
-                                                    + chatBox.getId());
+                                            System.out.println("chatBox.getId() = " + chatBox.getId());
                                             System.out.println("sentTo: " + sentTo);
                                             if (chatBox.getId() == Integer.parseInt(sentTo)) {
                                                 chatBox.addHistory(message);
-                                                chatBox.getUsers().removeIf(
-                                                        user1 -> user1.getName().equals(leaveUserName));
-                                                if (chatBox.equals(currentChatBox)) {
+                                                chatBox.getUsers().removeIf(user1 -> user1.getName().equals(leaveUserName));
+                                                if (chatBox.equals(currentChatBox)){
                                                     flashMessages(chatBox);
                                                 }
-                                                System.out.println(
-                                                        "add message to chatBox History");
+                                                System.out.println("add message to chatBox History");
                                             }
                                         }
                                         flashChatBox();
                                     }
                                 } else {
                                     System.out.println("o sent to chat room");
-                                    System.out.println("user.getChatBoxList(): "
-                                            + user.getChatBoxList());
+                                    System.out.println("user.getChatBoxList(): " + user.getChatBoxList());
                                     for (ChatBox chatBox : user.getChatBoxList()) {
                                         System.out.println("chatBox.getId() = " + chatBox.getId());
                                         System.out.println("sentTo: " + sentTo);
                                         if (chatBox.getId() == Integer.parseInt(sentTo)) {
                                             chatBox.addHistory(message);
-                                            if (chatBox.equals(currentChatBox)) {
+                                            if (chatBox.equals(currentChatBox)){
                                                 flashMessages(chatBox);
                                             }
                                             System.out.println("add message to chatBox History");
@@ -538,11 +590,37 @@ public class ChatRoomController implements Initializable  {
                             } else if (o instanceof ChatBox) {
                                 System.out.println("Received a chatBox");
                                 ChatBox chatBox = (ChatBox) o;
-                                user.addChatBox(chatBox);
-                                hasReceivedNewChatBox = true;
-                                flashChatBox();
-                                System.out.println("Create ChatBox");
+                                boolean cbAlreadyExist = false;
+                                for (ChatBox c : user.getChatBoxList()) {
+                                    if (c.getId() == chatBox.getId()) {
+                                        cbAlreadyExist = true;
+                                        break;
+                                    }
+                                }
+                                if (!cbAlreadyExist) {
+                                    synchronized (lock) {
+                                        user.addChatBox(chatBox);
+                                        hasReceivedNewChatBox = true;
+                                        flashChatBox();
+                                        System.out.println("Create ChatBox");
+                                    }
+                                } else {
+                                    for (int i = 0; i < user.getChatBoxList().size(); i++) {
+                                        if (user.getChatBoxList().get(i).getId() == chatBox.getId()) {
+                                            chatBoxListView.getSelectionModel().select(i);
+                                            flashMessages(user.getChatBoxList().get(i));
+                                            break;
+                                        }
+                                    }
+                                    System.out.println("ChatBox Already exist");
+                                }
+                                hasReceivedNewChatBox = false;
+                                currentOnlineUser = null;
+                                choosedUser.clear();
+                                chatName.clear();
+                                System.out.println("Data has been cleared");
                             } else if (o instanceof List) {
+                                System.out.println("get the currentOnlineUser List");
                                 currentOnlineUser = (List<User>) o;
                             }
                         });
@@ -603,8 +681,7 @@ public class ChatRoomController implements Initializable  {
                     String msgPlay = "";
                     if (History.size() != 0) {
                         String latestMsg = History.get(History.size() - 1).getData();
-                        msgPlay = latestMsg.length() > 8
-                                ? latestMsg.substring(0, 8) + "..." : latestMsg;
+                        msgPlay = latestMsg.length() > 8 ? latestMsg.substring(0, 8) + "..." : latestMsg;
                     }
                     Label msgLabel = new Label(msgPlay);
 
@@ -621,23 +698,28 @@ public class ChatRoomController implements Initializable  {
         @Override
         public ListCell<Message> call(ListView<Message> param) {
             return new ListCell<Message>() {
+
                 @Override
                 public void updateItem(Message msg, boolean empty) {
-                    super.getChildren().clear();
                     super.updateItem(msg, empty);
                     if (empty || Objects.isNull(msg)) {
                         setText(null);
                         setGraphic(null);
+//                        setMinHeight(0);
+//                        setMaxHeight(0);
                         return;
                     }
+
+
 
                     HBox wrapper = new HBox();
                     int lines = msg.getData().split("\n").length;
                     System.out.println(lines);
                     Label nameLabel = new Label(msg.getSentBy());
                     Label msgLabel = new Label(msg.getData());
-                    setMinHeight(Region.USE_COMPUTED_SIZE);
-                    setPrefHeight(Region.USE_COMPUTED_SIZE);
+//                    msgLabel.setPrefHeight(lines * 40);
+//                    setPrefHeight();
+//                    setHeight(lines * 25);
                     nameLabel.setPrefSize(50, 20);
                     nameLabel.setWrapText(true);
                     nameLabel.setStyle("-fx-border-color: black; -fx-border-width: 1px;");
@@ -667,6 +749,8 @@ public class ChatRoomController implements Initializable  {
             };
         }
     }
+
+
 
     public void sortChatBoxes(List<ChatBox> chatBoxes) {
         chatBoxes.sort((u1, u2) -> {
@@ -706,7 +790,6 @@ public class ChatRoomController implements Initializable  {
     public void setCurrentOnlineUser(List<User> users) {
         currentOnlineUser = users;
     }
-
     public void setSelfStage(Stage selfStage) {
         this.selfStage = selfStage;
     }
