@@ -8,6 +8,11 @@ import cn.edu.sustech.cs209.chatting.common.Message;
 import cn.edu.sustech.cs209.chatting.common.MyObjectInputStream;
 import cn.edu.sustech.cs209.chatting.common.MyObjectOutputStream;
 import cn.edu.sustech.cs209.chatting.common.User;
+import java.io.IOException;
+import java.net.Socket;
+import java.net.URL;
+import java.util.Date;
+import java.util.ResourceBundle;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
@@ -17,11 +22,6 @@ import javafx.scene.control.TextField;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
-import java.io.IOException;
-import java.net.Socket;
-import java.net.URL;
-import java.util.Date;
-import java.util.ResourceBundle;
 
 public class LoginController {
 
@@ -50,6 +50,7 @@ public class LoginController {
     private MyObjectInputStream objectInputStream;
 
     public User user;
+
     @FXML // This method is called by the FXMLLoader when initialization is complete
     void initialize() throws IOException {
         assert loginBotton != null : "fx:id=\"loginBotton\" was not injected: check your FXML file 'Untitled'.";

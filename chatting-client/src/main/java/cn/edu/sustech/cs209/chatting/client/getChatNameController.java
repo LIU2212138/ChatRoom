@@ -2,15 +2,14 @@ package cn.edu.sustech.cs209.chatting.client;
 /**
  * Sample Skeleton for 'Untitled' Controller Class
  */
-
+import java.net.URL;
+import java.util.List;
+import java.util.ResourceBundle;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 
-import java.net.URL;
-import java.util.List;
-import java.util.ResourceBundle;
 
 public class getChatNameController {
 

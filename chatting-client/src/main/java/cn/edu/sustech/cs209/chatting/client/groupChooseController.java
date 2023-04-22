@@ -4,16 +4,16 @@ package cn.edu.sustech.cs209.chatting.client;
  */
 
 import cn.edu.sustech.cs209.chatting.common.User;
+import java.io.IOException;
+import java.net.URL;
+import java.util.List;
+import java.util.ResourceBundle;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.stage.Stage;
 
-import java.io.IOException;
-import java.net.URL;
-import java.util.List;
-import java.util.ResourceBundle;
 
 public class groupChooseController {
 
@@ -43,12 +43,14 @@ public class groupChooseController {
     private String userName;
 
     Stage selfStage;
+
     @FXML // This method is called by the FXMLLoader when initialization is complete
     void initialize() {
         assert Choose != null : "fx:id=\"Choose\" was not injected: check your FXML file 'Untitled'.";
         assert grpupChooseListview != null : "fx:id=\"grpupChooseListview\" was not injected: check your FXML file 'Untitled'.";
 
     }
+
     boolean init(List<User> users, User self, List<User> chooseUser, List<String> chooseName, String userName, Stage selfStage) throws IOException, ClassNotFoundException {
         this.chooseUser = chooseUser;
         this.users = users;

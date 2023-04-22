@@ -1,12 +1,12 @@
 package cn.edu.sustech.cs209.chatting.server;
 
+import java.sql.*;
+import java.util.Arrays;
+import java.util.List;
 import org.apache.ibatis.type.BaseTypeHandler;
 import org.apache.ibatis.type.JdbcType;
 import org.postgresql.util.PGobject;
 
-import java.sql.*;
-import java.util.Arrays;
-import java.util.List;
 
 public class ListTypeHandler extends BaseTypeHandler<List<Integer>> {
 

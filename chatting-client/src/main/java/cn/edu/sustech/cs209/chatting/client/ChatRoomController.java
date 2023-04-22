@@ -6,6 +6,11 @@ package cn.edu.sustech.cs209.chatting.client;
 
 
 import cn.edu.sustech.cs209.chatting.common.*;
+import java.io.IOException;
+import java.net.Socket;
+import java.net.SocketException;
+import java.net.URL;
+import java.util.*;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -24,11 +29,6 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.util.Callback;
 
-import java.io.IOException;
-import java.net.Socket;
-import java.net.SocketException;
-import java.net.URL;
-import java.util.*;
 
 public class ChatRoomController implements Initializable  {
 
@@ -214,7 +214,7 @@ public class ChatRoomController implements Initializable  {
                     newStage.show();
                 });
 
-                User chooseUser ;
+                User chooseUser;
                 while (true) {
                     if (choosedUser.size() != 0) {
                         chooseUser = choosedUser.get(0);
@@ -294,7 +294,7 @@ public class ChatRoomController implements Initializable  {
                     newStage.show();
                 });
 
-                List<User> chooseUser ;
+                List<User> chooseUser;
                 while (true) {
                     if (choosedUser.size() != 0) {
                         if (choosedUser.get(0) != null) {
@@ -389,6 +389,7 @@ public class ChatRoomController implements Initializable  {
         currentTalkingText.setText("      Current Talk With: " + currentChatBox.getChatName());
         System.out.println(currentChatBox.getChatName());
     }
+
     public void flashMessages(ChatBox chatBox) {
         messageObservableList.clear();
         if (chatBox == null) {
@@ -419,7 +420,7 @@ public class ChatRoomController implements Initializable  {
         System.out.println(user);
         System.out.println(currentChatBox);
         Message message = new Message(new Date().getTime(), user.getName(), String.valueOf(currentChatBox.getId()), data);
-        try{
+        try {
             objectOutputStream.writeObject(message);
             objectOutputStream.flush();
             textArea.clear();
@@ -502,7 +503,7 @@ public class ChatRoomController implements Initializable  {
         buttonYse.setOnAction(event -> {
             // TODO: 发送删除报文。
             Message deleteMessage = new Message(new Date().getTime(),
-                    String.valueOf(user.getId()),"0",
+                    String.valueOf(user.getId()), "0",
                     "DELETE " + String.valueOf(user.getId()) + " " + String.valueOf(currentChatBox.getId()));
             try {
                 objectOutputStream.writeObject(deleteMessage);
@@ -528,7 +529,7 @@ public class ChatRoomController implements Initializable  {
 
                 objectInputStream = new MyObjectInputStream(socket.getInputStream());
                 System.out.println("create objectInputStream");
-                while (!Thread.currentThread().isInterrupted()){
+                while (!Thread.currentThread().isInterrupted()) {
                     //TODO: 持续接收消息并解析，作出对应的操作(记得回顾server的操作)
                     if (socket.isConnected()) {
                         System.out.println("is connected");
@@ -563,7 +564,7 @@ public class ChatRoomController implements Initializable  {
                                             if (chatBox.getId() == Integer.parseInt(sentTo)) {
                                                 chatBox.addHistory(message);
                                                 chatBox.getUsers().removeIf(user1 -> user1.getName().equals(leaveUserName));
-                                                if (chatBox.equals(currentChatBox)){
+                                                if (chatBox.equals(currentChatBox)) {
                                                     flashMessages(chatBox);
                                                 }
                                                 System.out.println("add message to chatBox History");
@@ -579,7 +580,7 @@ public class ChatRoomController implements Initializable  {
                                         System.out.println("sentTo: " + sentTo);
                                         if (chatBox.getId() == Integer.parseInt(sentTo)) {
                                             chatBox.addHistory(message);
-                                            if (chatBox.equals(currentChatBox)){
+                                            if (chatBox.equals(currentChatBox)) {
                                                 flashMessages(chatBox);
                                             }
                                             System.out.println("add message to chatBox History");
@@ -705,8 +706,6 @@ public class ChatRoomController implements Initializable  {
                     if (empty || Objects.isNull(msg)) {
                         setText(null);
                         setGraphic(null);
-//                        setMinHeight(0);
-//                        setMaxHeight(0);
                         return;
                     }
 
@@ -717,9 +716,6 @@ public class ChatRoomController implements Initializable  {
                     System.out.println(lines);
                     Label nameLabel = new Label(msg.getSentBy());
                     Label msgLabel = new Label(msg.getData());
-//                    msgLabel.setPrefHeight(lines * 40);
-//                    setPrefHeight();
-//                    setHeight(lines * 25);
                     nameLabel.setPrefSize(50, 20);
                     nameLabel.setWrapText(true);
                     nameLabel.setStyle("-fx-border-color: black; -fx-border-width: 1px;");

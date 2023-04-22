@@ -1,9 +1,9 @@
 package cn.edu.sustech.cs209.chatting.server.Dao;
 
 import cn.edu.sustech.cs209.chatting.common.ChatBox;
+import java.util.List;
 import org.apache.ibatis.annotations.Param;
 
-import java.util.List;
 
 public interface ChatBoxDao {
     ChatBox selectChatBoxById(int id);
@@ -15,6 +15,7 @@ public interface ChatBoxDao {
     List<ChatBox> selectAllChatBox();
 
     void insertChatBox(ChatBox chatBox);
+
     Integer selectMaxId();
 
     void deleteChatBox(int id);

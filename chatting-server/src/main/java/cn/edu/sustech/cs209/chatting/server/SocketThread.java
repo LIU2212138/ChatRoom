@@ -1,7 +1,8 @@
 package cn.edu.sustech.cs209.chatting.server;
 
-import cn.edu.sustech.cs209.chatting.common.*;
+import static cn.edu.sustech.cs209.chatting.server.Server.*;
 
+import cn.edu.sustech.cs209.chatting.common.*;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -12,14 +13,13 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 
-import static cn.edu.sustech.cs209.chatting.server.Server.*;
 
-public class SocketThread implements Runnable{
+public class SocketThread implements Runnable {
     private Socket socket;
 
     private final Service service;
 
-    public SocketThread(Socket socket, Service service){
+    public SocketThread(Socket socket, Service service) {
         this.socket = socket;
         this.service = service;
     }
@@ -58,7 +58,7 @@ public class SocketThread implements Runnable{
                         // HISTORY 16
                         case "HISTORY": {
                             int CBID = Integer.parseInt(dataP[1]);
-//                            List<Message> History = idCBMap.get(CBID).getHistory();
+                        //List<Message> History = idCBMap.get(CBID).getHistory();
                             List<Message> History = service.selectMessageByDest(String.valueOf(CBID));
                             sendMessage(socket, History);
                             break;
@@ -111,8 +111,8 @@ public class SocketThread implements Runnable{
                             break;
                         }
                         // LOGIN name password
-                        case "LOGIN" : {
-                            if (dataP.length != 3){
+                        case "LOGIN": {
+                            if (dataP.length != 3) {
                                 sendMessage(socket, "User Name or password can not contain BLANKSPACE");
                             }
                             //User targetUser = nameUserMap.get(dataP[1]);
@@ -138,14 +138,14 @@ public class SocketThread implements Runnable{
                             break;
                         }
                         //EXIT username
-                        case "EXIT" : {
+                        case "EXIT": {
                             userSocMap.remove(dataP[1]);
                             objectInputStream.close();
                             Thread.currentThread().interrupt();
                             System.out.println("socked is closed");
                             break;
                         }
-                        case "GETAU" : {
+                        case "GETAU": {
                             System.out.println("Received GETAU");
                             List<User> users = new ArrayList<>();
                             for (String name : userSocMap.keySet()) {
@@ -210,6 +210,7 @@ public class SocketThread implements Runnable{
             System.out.println(e.getMessage());
         }
     }
+
     public static void sendMessage(Socket socketToSend, Object o) throws IOException {
         MyObjectOutputStream objectOutputStream = new MyObjectOutputStream(socketToSend.getOutputStream());
         objectOutputStream.writeObject(o);

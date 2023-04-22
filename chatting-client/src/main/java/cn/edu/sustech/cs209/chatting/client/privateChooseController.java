@@ -5,6 +5,11 @@ package cn.edu.sustech.cs209.chatting.client;
  */
 
 import cn.edu.sustech.cs209.chatting.common.User;
+import java.io.IOException;
+import java.net.URL;
+import java.util.List;
+import java.util.Objects;
+import java.util.ResourceBundle;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -14,11 +19,6 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import javafx.util.Callback;
 
-import java.io.IOException;
-import java.net.URL;
-import java.util.List;
-import java.util.Objects;
-import java.util.ResourceBundle;
 
 public class privateChooseController {
 

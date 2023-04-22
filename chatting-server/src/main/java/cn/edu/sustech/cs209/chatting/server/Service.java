@@ -24,6 +24,7 @@ public class Service {
     UserDao userDao = session.getMapper(UserDao.class);
     MessageDao messageDao = session.getMapper(MessageDao.class);
     ChatBoxDao chatBoxDao = session.getMapper(ChatBoxDao.class);
+
     public Service() throws IOException {
     }
 
@@ -46,7 +47,7 @@ public class Service {
             chatBox.setHistoryIdList(messageIdList);
             chatBox.setHistory(messageList);
             List<User> userList = new ArrayList<>();
-            for (int usrId: chatBox.getUserIdList()) {
+            for (int usrId : chatBox.getUserIdList()) {
                 userList.add(userDao.selectUserById(usrId));
             }
             chatBox.setUsers(userList);
@@ -75,7 +76,7 @@ public class Service {
             chatBox.setHistoryIdList(messageIdList);
             chatBox.setHistory(messageList);
             List<User> userList = new ArrayList<>();
-            for (int usrId: chatBox.getUserIdList()) {
+            for (int usrId : chatBox.getUserIdList()) {
                 userList.add(userDao.selectUserById(usrId));
             }
             chatBox.setUsers(userList);
@@ -114,12 +115,12 @@ public class Service {
         return chatBoxDao.selectMaxId();
     }
 
-    public ChatBox selectChatBoxById(int id){
+    public ChatBox selectChatBoxById(int id) {
         ChatBox chatBox = chatBoxDao.selectChatBoxById(id);
         List<Message> messageList = new ArrayList<>(messageDao.selectMessageByDest(String.valueOf(chatBox.getId())));
 
         List<User> userList = new ArrayList<>();
-        for (int usrId: chatBox.getUserIdList()) {
+        for (int usrId : chatBox.getUserIdList()) {
             userList.add(userDao.selectUserById(usrId));
         }
         chatBox.setHistory(messageList);
@@ -138,7 +139,7 @@ public class Service {
     }
 
 
-    public void updateHistoryIdList( List<Integer> historyIdList, int id) {
+    public void updateHistoryIdList(List<Integer> historyIdList, int id) {
         chatBoxDao.updateHistoryIdList(id, historyIdList);
     }
 
